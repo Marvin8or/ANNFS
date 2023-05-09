@@ -87,7 +87,7 @@
     </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;C:\Users\GabrielM\Documents\Projects\ANNFS\LinearAlgebra;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -104,10 +104,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;C:\Users\GabrielM\Documents\Projects\ANNFS\LinearAlgebra;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;C:\Users\GabrielM\Documents\Projects\ANNFS\LinearAlgebra;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -116,7 +116,7 @@
     </Midl>
     <Link>
       <AdditionalOptions>%(AdditionalOptions)  /machine:x64</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;NeuralNetwork\Debug\NeuralNetwork.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;NeuralNetwork\Debug\NeuralNetwork.lib;LinearAlgebra\Debug\LinearAlgebra.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -131,7 +131,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;C:\Users\GabrielM\Documents\Projects\ANNFS\LinearAlgebra;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -147,10 +147,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;C:\Users\GabrielM\Documents\Projects\ANNFS\LinearAlgebra;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;C:\Users\GabrielM\Documents\Projects\ANNFS\LinearAlgebra;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -159,7 +159,7 @@
     </Midl>
     <Link>
       <AdditionalOptions>%(AdditionalOptions)  /machine:x64</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;NeuralNetwork\Release\NeuralNetwork.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;NeuralNetwork\Release\NeuralNetwork.lib;LinearAlgebra\Release\LinearAlgebra.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -174,7 +174,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;C:\Users\GabrielM\Documents\Projects\ANNFS\LinearAlgebra;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -190,10 +190,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;C:\Users\GabrielM\Documents\Projects\ANNFS\LinearAlgebra;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;C:\Users\GabrielM\Documents\Projects\ANNFS\LinearAlgebra;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -202,7 +202,7 @@
     </Midl>
     <Link>
       <AdditionalOptions>%(AdditionalOptions)  /machine:x64</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;NeuralNetwork\MinSizeRel\NeuralNetwork.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;NeuralNetwork\MinSizeRel\NeuralNetwork.lib;LinearAlgebra\MinSizeRel\LinearAlgebra.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -217,7 +217,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;C:\Users\GabrielM\Documents\Projects\ANNFS\LinearAlgebra;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -233,10 +233,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;C:\Users\GabrielM\Documents\Projects\ANNFS\LinearAlgebra;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\GabrielM\Documents\Projects\ANNFS\build;C:\Users\GabrielM\Documents\Projects\ANNFS\NeuralNetwork;C:\Users\GabrielM\Documents\Projects\ANNFS\LinearAlgebra;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -245,7 +245,7 @@
     </Midl>
     <Link>
       <AdditionalOptions>%(AdditionalOptions)  /machine:x64</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;NeuralNetwork\RelWithDebInfo\NeuralNetwork.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;NeuralNetwork\RelWithDebInfo\NeuralNetwork.lib;LinearAlgebra\RelWithDebInfo\LinearAlgebra.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -321,6 +321,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ProjectReference Include="C:\Users\GabrielM\Documents\Projects\ANNFS\build\ZERO_CHECK.vcxproj">
       <Project>{06A0F3A2-6AFF-3AA9-AC66-60590D951934}</Project>
       <Name>ZERO_CHECK</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\GabrielM\Documents\Projects\ANNFS\build\LinearAlgebra\LinearAlgebra.vcxproj">
+      <Project>{27325E82-C9EB-376D-BA56-A23958532302}</Project>
+      <Name>LinearAlgebra</Name>
     </ProjectReference>
     <ProjectReference Include="C:\Users\GabrielM\Documents\Projects\ANNFS\build\NeuralNetwork\NeuralNetwork.vcxproj">
       <Project>{C594D581-B213-3E70-B711-22B85F80E10B}</Project>
