@@ -1,0 +1,82 @@
+#include "Layer.h"
+using namespace std;
+
+Layer::Layer(int size)
+{
+	this->setSize(size);
+	for(int i = 0; i < this->getSize(); i++)
+	{
+		this->neurons.push_back(new Neuron(1.00));
+	}
+}
+
+Layer::Layer(int size, ActivationFunc activation)
+{
+	this->setSize(size);
+	for (int i = 0; i < this->getSize(); i++)
+	{
+		this->neurons.push_back(new Neuron(1.00, activation));
+	}
+}
+
+Layer::Layer(int size, vector<ActivationFunc> activations)
+{
+	this->setSize(size);
+	for (int i = 0; i < this->getSize(); i++)
+	{
+		this->neurons.push_back(new Neuron(1.00, activations.at(i)));
+	}
+}
+
+void Layer::setValue(int indexOfNeuron, double value)
+{
+	if(indexOfNeuron < 0)
+	{
+		cerr << "Index is invalid: " << size << " < 0" << endl;
+		assert(false);
+	}
+	this->neurons.at(indexOfNeuron)->setVal(value);
+}
+
+void Layer::setSize(int size)
+{
+	if (size <= 0)
+	{
+		cerr << "Number of neurons invalid: " << size << " <= 0" << endl;
+		assert(false);
+	}
+
+	this->size = size;
+}
+
+Matrix* Layer::matrixifyValues()
+{
+	Matrix* m = new Matrix(this->getSize(), 1, false);
+	for (int i = 0; i < this->getSize(); i++)
+	{
+		m->setValue(i, 0, this->getNeurons().at(i)->getVal());
+	}
+	return m;
+}
+
+Matrix* Layer::matrixifyActivatedValues()
+{
+	Matrix* m = new Matrix(this->getSize(), 1, false);
+	for (int i = 0; i < this->getSize(); i++)
+	{
+		m->setValue(i, 0, this->getNeurons().at(i)->getActivatedVal());
+	}
+	return m;
+}
+
+Matrix* Layer::matrixifyDerivedValues()
+{
+	Matrix* m = new Matrix(this->getSize(), 1, false);
+	for (int i = 0; i < this->getSize(); i++)
+	{
+		m->setValue(i, 0, this->getNeurons().at(i)->getDerivedVal());
+	}
+	return m;
+}
+
+

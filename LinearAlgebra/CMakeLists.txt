@@ -1,3 +1,5 @@
 project(LinearAlgebra)
 file(GLOB LinearAlgebra_src "*.h" "*.cpp")
-add_library(LinearAlgebra ${LinearAlgebra_src})
+file(GLOB Operations_src "operations/*.h" "operations/*.cpp")
+
+add_library(LinearAlgebra ${LinearAlgebra_src} ${Operations_src})

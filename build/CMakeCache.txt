@@ -183,6 +183,9 @@ NeuralNetwork_LIB_DEPENDS:STATIC=
 //Value Computed by CMake
 NeuralNetwork_SOURCE_DIR:STATIC=C:/Users/GabrielM/Documents/Projects/ANNFS/NeuralNetwork
 
+//Dependencies for target
+Operations_LIB_DEPENDS:STATIC=
+
 
 ########################
 # INTERNAL cache entries
