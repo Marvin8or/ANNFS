@@ -1,4 +1,5 @@
 #include "Neuron.h"
+#include "Matrix.h"
 #include <iostream>
 
 using namespace std;
@@ -13,5 +14,8 @@ int main()
 	cout << "Neuron value: " << neuron2->getVal() << endl;
 	cout << "Neuron act. value: " << neuron2->getActivatedVal() << endl;
 	cout << "Neuron der. value: " << neuron2->getDerivedVal() << endl;
+
+	Matrix* matrix = new Matrix(3, 3, false, 10);
+	matrix->printToConsole();
 
 }

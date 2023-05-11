@@ -30,7 +30,7 @@ void Matrix::printToConsole()
 	{
 		for (int j = 0; j < this->getNumCols(); j++)
 		{
-			std::cout << this->getValue(i, j) << "\t\t";
+			std::cout << this->getValue(i, j) << "\t";
 		}
 		std::cout << std::endl;
 	}
@@ -44,6 +44,19 @@ Matrix* Matrix::transpose()
 		for (int j = 0; j < this->getNumCols(); j++)
 		{
 			m_t->setValue(j, i, this->getValue(i, j));
+		}
+	}
+	return m_t;
+}
+
+Matrix* Matrix::copy()
+{
+	Matrix* m_t = new Matrix(this->getNumCols(), this->getNumRows(), false);
+	for (int i = 0; i < this->getNumRows(); i++)
+	{
+		for (int j = 0; j < this->getNumCols(); j++)
+		{
+			m_t->setValue(i, j, this->getValue(i, j));
 		}
 	}
 	return m_t;
