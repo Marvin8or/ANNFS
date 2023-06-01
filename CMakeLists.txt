@@ -5,12 +5,12 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_subdirectory(NeuralNetwork)
-add_subdirectory(LinearAlgebra)
+add_subdirectory(Math)
 
 add_executable(ANNFS  main.cpp)
-target_link_libraries(ANNFS PUBLIC NeuralNetwork LinearAlgebra)
+target_link_libraries(ANNFS PUBLIC NeuralNetwork Math)
 target_include_directories(ANNFS PUBLIC
                        	  "${PROJECT_BINARY_DIR}"
                           "${PROJECT_SOURCE_DIR}/NeuralNetwork"
-			  "${PROJECT_SOURCE_DIR}/LinearAlgebra"
+			  "${PROJECT_SOURCE_DIR}/Math"
                           )

@@ -1,7 +1,6 @@
 #include "Matrix.h"
 
-
-Matrix::Matrix(int rows, int columns, bool isRandom, double default_value)
+LinearAlgebra::Matrix::Matrix(int rows, int columns, bool isRandom, double default_value)
 {
 	this->numRows = rows;
 	this->numCols = columns;
@@ -18,13 +17,13 @@ Matrix::Matrix(int rows, int columns, bool isRandom, double default_value)
 	}
 }
 
-tuple<int, int> Matrix::getShape()
+tuple<int, int> LinearAlgebra::Matrix::getShape()
 {
 	tuple<int, int> t(this->getNumRows(), this->getNumCols());
 	return t;
 }
 
-void Matrix::printToConsole()
+void LinearAlgebra::Matrix::printToConsole()
 {
 	for (int i = 0; i < this->getNumRows(); i++)
 	{
@@ -36,7 +35,7 @@ void Matrix::printToConsole()
 	}
 }
 
-Matrix* Matrix::transpose()
+LinearAlgebra::Matrix* LinearAlgebra::Matrix::transpose()
 {
 	Matrix* m_t = new Matrix(this->getNumCols(), this->getNumRows(), false);
 	for (int i = 0; i < this->getNumRows(); i++)
@@ -49,7 +48,7 @@ Matrix* Matrix::transpose()
 	return m_t;
 }
 
-Matrix* Matrix::copy()
+LinearAlgebra::Matrix* LinearAlgebra::Matrix::copy()
 {
 	Matrix* m_t = new Matrix(this->getNumCols(), this->getNumRows(), false);
 	for (int i = 0; i < this->getNumRows(); i++)
@@ -62,7 +61,7 @@ Matrix* Matrix::copy()
 	return m_t;
 }
 
-void Matrix::populate(double value)
+void LinearAlgebra::Matrix::populate(double value)
 {
 	for (int i = 0; i < this->getNumRows(); i++)
 	{
@@ -72,7 +71,7 @@ void Matrix::populate(double value)
 		}
 	}
 }
-double Matrix::generateRandomNumber()
+double LinearAlgebra::Matrix::generateRandomNumber()
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());

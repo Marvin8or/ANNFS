@@ -1,10 +1,11 @@
 #pragma once
 
 #include "Neuron.h"
-#include "../LinearAlgebra/Matrix.h"
+#include "../Math/LinearAlgebra/Matrix.h"
 #include "assert.h"
 
 using namespace std;
+using namespace LinearAlgebra;
 class Layer
 {
 public:
