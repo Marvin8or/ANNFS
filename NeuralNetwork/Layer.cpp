@@ -54,7 +54,7 @@ Matrix* Layer::matrixifyValues()
 	Matrix* m = new Matrix(this->getSize(), 1, false);
 	for (int i = 0; i < this->getSize(); i++)
 	{
-		m->setValue(i, 0, this->getNeurons().at(i)->getVal());
+		m->setValue(i, 0, this->getNeurons().at(i)->getValue());
 	}
 	return m;
 }
@@ -64,7 +64,7 @@ Matrix* Layer::matrixifyActivatedValues()
 	Matrix* m = new Matrix(this->getSize(), 1, false);
 	for (int i = 0; i < this->getSize(); i++)
 	{
-		m->setValue(i, 0, this->getNeurons().at(i)->getActivatedVal());
+		m->setValue(i, 0, this->getNeurons().at(i)->getActivatedValue());
 	}
 	return m;
 }
@@ -74,9 +74,20 @@ Matrix* Layer::matrixifyDerivedValues()
 	Matrix* m = new Matrix(this->getSize(), 1, false);
 	for (int i = 0; i < this->getSize(); i++)
 	{
-		m->setValue(i, 0, this->getNeurons().at(i)->getDerivedVal());
+		m->setValue(i, 0, this->getNeurons().at(i)->getDerivedValue());
 	}
 	return m;
 }
+
+vector<double> Layer::getActivatedValues()
+{
+	vector<double> activatedValues;
+	for(int i = 0; i < this->getSize(); i++)
+	{
+		activatedValues.push_back(this->getNeurons().at(i)->getActivatedValue());
+	}
+	return activatedValues;
+}
+
 
 

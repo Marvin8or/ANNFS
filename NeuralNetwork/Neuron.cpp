@@ -51,10 +51,10 @@ Neuron::Neuron(double value, ActivationFunc activation)
 
 void Neuron::activate()
 {
-	this->activatedValue = this->activationFunction(this->getVal());
+	this->activatedValue = this->activationFunction(this->getValue());
 }
 
 void Neuron::derive()
 {
-	this->derivedValue = this->d_activationFunction(this->getVal());
+	this->derivedValue = this->d_activationFunction(this->getValue());
 }

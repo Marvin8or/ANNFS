@@ -19,6 +19,7 @@ public:
 	Matrix* matrixifyDerivedValues();
 
 	vector<Neuron*> getNeurons() { return this->neurons; }
+	vector<double> getActivatedValues();
 	void setNeurons(vector<Neuron*> neurons) { this->neurons = neurons; }
 	int getSize() { return this->size; }
 	void setSize(int size);

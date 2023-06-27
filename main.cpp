@@ -22,11 +22,12 @@ int main()
 	matrix->printToConsole();
 	*/
 
-	Matrix* a = new Matrix(3, 2, false, 1);
-	Matrix* b = new Matrix(2, 3, false, 5);
-	Matrix* c = new Matrix(3, 3, false);
-	LinearAlgebra::Operations().MultiplyMatrices(a, b, c);
-	c->printToConsole();
-	delete a;
-	delete b;
+	//Matrix* a = new Matrix(3, 2, false, 1);
+	//Matrix* b = new Matrix(2, 3, false, 5);
+	//Matrix* c = new Matrix(3, 3, false);
+	//LinearAlgebra::Operations().MultiplyMatrices(a, b, c);
+	//c->printToConsole();
+	//delete a;
+	//delete b;
+	//delete c;
 }

@@ -31,9 +31,9 @@ public:
 	void derive();
 
 	//getters
-	double getVal() { return this->val; }
-	double getActivatedVal() { return this->activatedValue; }
-	double getDerivedVal() { return this->derivedValue; }
+	double getValue() { return this->val; }
+	double getActivatedValue() { return this->activatedValue; }
+	double getDerivedValue() { return this->derivedValue; }
 
 	// Setter
 	void setVal(double val);
