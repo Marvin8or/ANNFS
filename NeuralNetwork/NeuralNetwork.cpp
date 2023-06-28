@@ -45,8 +45,7 @@ NeuralNetwork::NeuralNetwork(
 	vector<int> topology,
 	ActivationFunc hiddenActivationType,
 	ActivationFunc outputActivationType,
-	CostFunctionType costFunction,
-	double bias,
+	CostFunctionType costFunction, double bias,
 	double learningRate,
 	double momentum
 )
