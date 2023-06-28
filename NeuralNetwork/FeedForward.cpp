@@ -16,5 +16,21 @@ void NeuralNetwork::feedForward()
 			b->getNumCols(),
 			false
 		);
+
+		if(i != 0)
+		{
+			a = this->getActivatedNeuronMatrix(i);
+		}
+
+		Operations::MultiplyMatrices(a, b, c);
+
+		for(int c_index = 0; c_index < c->getNumCols(); c_index++)
+		{
+			this->setNeuronValue(i + 1, c_index, c->getValue(0, c_index) + this->bias);
+		}
+
+		delete a;
+		delete b;
+		delete c;
 	}
 }
