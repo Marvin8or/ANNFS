@@ -13,6 +13,7 @@ namespace LinearAlgebra
 	{
 	public:
 		Matrix(int rows, int columns, bool isRandom, double default_value = 0.00);
+		Matrix(Matrix& matrix);
 
 		Matrix* transpose();
 		Matrix* copy();

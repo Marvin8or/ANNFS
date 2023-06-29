@@ -17,6 +17,23 @@ LinearAlgebra::Matrix::Matrix(int rows, int columns, bool isRandom, double defau
 	}
 }
 
+LinearAlgebra::Matrix::Matrix(Matrix& matrix)
+{
+	this->numRows = matrix.getNumRows();
+	this->numCols = matrix.getNumCols();
+
+	for (int i = 0; i < this->getNumRows(); i++)
+	{
+		vector<double> colValues;
+		for (int j = 0; j < this->getNumCols(); j++)
+		{
+			double r = matrix.getValue(i, j);
+			colValues.push_back(r);
+		}
+		this->values.push_back(colValues);
+	}
+}
+
 tuple<int, int> LinearAlgebra::Matrix::getShape()
 {
 	tuple<int, int> t(this->getNumRows(), this->getNumCols());
