@@ -62,6 +62,7 @@ public:
 	void feedForward();
 	void backPropagation();
 	void setErrors();
+	vector<double> getErrors() { return this->errors; }
 
 	vector<double> getActivatedVals(int index) { return this->layers.at(index)->getActivatedValues(); }
 
