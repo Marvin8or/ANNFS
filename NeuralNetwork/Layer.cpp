@@ -35,7 +35,7 @@ void Layer::setValue(int indexOfNeuron, double value)
 		cerr << "Index is invalid: " << size << " < 0" << endl;
 		assert(false);
 	}
-	this->neurons.at(indexOfNeuron)->setVal(value);
+	this->neurons.at(indexOfNeuron)->setValue(value);
 }
 
 void Layer::setSize(int size)

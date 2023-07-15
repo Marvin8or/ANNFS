@@ -36,7 +36,7 @@ public:
 	double getDerivedValue() { return this->derivedValue; }
 
 	// Setter
-	void setVal(double val);
+	void setValue(double val) { this->val = val; };
 
 private:
 	// The non activated neuron value
