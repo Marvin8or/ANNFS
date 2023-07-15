@@ -36,6 +36,7 @@ NeuralNetwork::NeuralNetwork(
 	for(int i = 0; i < this->topology.at(this->topologySize - 1); i++)
 	{
 		this->errors.push_back(0.00);
+		this->derivedErrors.push_back(0.00);
 	}
 
 	this->error = 0.00;
@@ -90,6 +91,7 @@ NeuralNetwork::NeuralNetwork(
 	for (int i = 0; i < this->topology.at(this->topologySize - 1); i++)
 	{
 		this->errors.push_back(0.00);
+		this->derivedErrors.push_back(0.00);
 	}
 
 	this->error = 0.00;

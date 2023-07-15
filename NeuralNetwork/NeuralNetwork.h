@@ -56,6 +56,12 @@ public:
 		double momentum = 1
 	);
 
+	void train(
+		vector<double> input,
+		vector<double> target,
+		double bias,
+		double learningRate,
+		double momentum);
 	void setCurrentInput(vector<double> input);
 	void setCurrentTarget(vector<double> target) { this->target = target; }
 
