@@ -12,8 +12,8 @@ void NeuralNetwork::feedForward()
 		a = this->getNeuronMatrix(i);
 		b = this->getWeightMatrix(i);
 		c = new Matrix(
-			a->getNumRows(),
 			b->getNumCols(),
+			1,
 			false
 		);
 
@@ -22,11 +22,11 @@ void NeuralNetwork::feedForward()
 			a = this->getActivatedNeuronMatrix(i);
 		}
 
-		Operations::MultiplyMatrices(a, b, c);
+		Operations::MultiplyMatrices(b->transpose(), a, c);
 
-		for(int c_index = 0; c_index < c->getNumCols(); c_index++)
+		for(int r_index = 0; r_index < c->getNumRows(); r_index++)
 		{
-			this->setNeuronValue(i + 1, c_index, c->getValue(0, c_index) + this->bias);
+			this->setNeuronValue(i + 1, r_index, c->getValue(r_index, 0) + this->bias);
 		}
 
 		delete a;
