@@ -2,29 +2,29 @@
 
 void NeuralNetwork::setErrors()
 {
-	if(this->target.size() == 0)
+	if(target.size() == 0)
 	{
 		cerr << "No target for this neural network" << endl;
 		assert(false);
 	}
 
-	int outputLayerSize = this->layers.at(this->layers.size() - 1)->getNeurons().size();
-	if(this->target.size() != outputLayerSize)
+	int outputLayerSize = layers.at(layers.size() - 1)->getNeurons().size();
+	if(target.size() != outputLayerSize)
 	{
-		cerr << "Target size (" << this->target.size() << ") is not the same as output layer size: " << outputLayerSize << endl;
-		for (int i = 0; i < this->target.size(); i++)
+		cerr << "Target size (" << target.size() << ") is not the same as output layer size: " << outputLayerSize << endl;
+		for (int i = 0; i < target.size(); i++)
 		{
-			cout << this->target.at(i) << endl;
+			cout << target.at(i) << endl;
 		}
 	}
 
-	switch (this->costFunction)
+	switch (costFunction)
 	{
 		case(COST_MSE):
-			this->setErrorMSE();
+			setErrorMSE();
 			break;
 		default:
-			this->setErrorMSE();
+			setErrorMSE();
 			break;	
 	}
 }
@@ -32,10 +32,10 @@ void NeuralNetwork::setErrors()
 
 void NeuralNetwork::setErrorMSE()
 {
-	int outputLayerIndex = this->layers.size() - 1;
-	vector<Neuron*> outputNeurons = this->layers.at(outputLayerIndex)->getNeurons();
+	int outputLayerIndex = layers.size() - 1;
+	vector<Neuron*> outputNeurons = layers.at(outputLayerIndex)->getNeurons();
 
-	this->error = 0.00;
+	error = 0.00;
 	for(int i = 0; i < target.size();i++)
 	{
 		double t = target.at(i);
@@ -44,6 +44,6 @@ void NeuralNetwork::setErrorMSE()
 		errors.at(i) = 0.5 * pow(abs(t - y), 2);
 		derivedErrors.at(i) = (y - t);
 
-		this->error += errors.at(i);
+		error += errors.at(i);
 	}
 }
