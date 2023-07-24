@@ -4,89 +4,61 @@
 
 void NeuralNetwork::backPropagation()
 {
-	// Output layer
-	int outputLayerIndex = topology.size() - 1;
-	int lastWeightMatrixIndex = weightMatrices.size() - 1;
 
-	vector<Matrix*> vector_dC0_cw;
-	vector<Matrix*> newWeights;
-	vector<Matrix*> vector_dC0_ca;
+	int lastLayerIndex = topologySize - 1;
 
-	// Calculate the vector of derived cost functions
-	Matrix* derivedCostFunction = new Matrix(this->layers.at(outputLayerIndex)->getSize(), 1, false);
-	for(int r = 0; r < layers.at(outputLayerIndex)->getSize(); r++)
+	// Push back dC_dw for last delta
+	Matrix* dC_dw_L = new Matrix(W.at(lastLayerIndex - 1)->getNumRows(), W.at(lastLayerIndex - 1)->getNumCols(), false);
+	Matrix* a_L_1 = layers.at(lastLayerIndex - 1)->matrixifyActivatedValues();
+	Matrix* lastDelta = deltas.back();
+	LinearAlgebra::Operations::MultiplyMatrices(lastDelta, a_L_1->transpose(), dC_dw_L);
+	dC_dw.push_back(dC_dw_L);
+	dC_db.push_back(lastDelta);
+
+	for(int layer_index = lastLayerIndex - 1; layer_index >= 1; layer_index--)
 	{
-		derivedCostFunction->setValue(r, 0, 2 * getErrors().at(r));
+		int weight_index = layer_index - 1;
+		int layerSize = layers.at(layer_index)->getSize();
+
+		Matrix* delta_L = new Matrix(layerSize, 1, false);
+		Matrix* nabla_a_C = new Matrix(layerSize, 1, false);
+
+		Matrix* w_ = W.at(layer_index)->transpose();
+		Matrix* d_ = deltas.back();
+		LinearAlgebra::Operations::MultiplyMatrices(w_, d_, nabla_a_C);
+
+		Matrix* dev = layers.at(layer_index)->matrixifyDerivedValues();
+		LinearAlgebra::Operations::HadamardProduct(nabla_a_C, dev, delta_L);
+		deltas.push_back(delta_L);
+		dC_db.push_back(delta_L);
+
+		dC_dw_L = new Matrix(W.at(weight_index)->getNumRows(), W.at(weight_index)->getNumCols(), false);
+		a_L_1 = layers.at(weight_index)->matrixifyActivatedValues();
+		LinearAlgebra::Operations::MultiplyMatrices(delta_L, a_L_1->transpose(), dC_dw_L);
+		dC_dw.push_back(dC_dw_L);
 	}
-	vector_dC0_ca.push_back(derivedCostFunction);
+}
 
-	Matrix* derivedLayer = layers.at(outputLayerIndex)->matrixifyDerivedValues();
-
-	Matrix* hadamardProduct = new Matrix(derivedCostFunction->getNumRows(), derivedCostFunction->getNumCols(), false);
-	Operations::HadamardProduct(derivedLayer, derivedCostFunction, hadamardProduct);
-
-	Matrix* activatedPreviousLayer = layers.at(outputLayerIndex - 1)->matrixifyActivatedValues()->transpose();
-
-	Matrix* dC0_cw = new Matrix(hadamardProduct->getNumRows(), activatedPreviousLayer->getNumCols(), false);
-	Operations::MultiplyMatrices(hadamardProduct, activatedPreviousLayer, dC0_cw);
-	vector_dC0_cw.push_back(dC0_cw->transpose());
-
-	// Calculate the new weight matrix between output layer and last hidden layer
-	Matrix* newWeight = new Matrix(dC0_cw->getNumCols(), dC0_cw->getNumRows(), false);
-	Operations::SubtractMatrices(weightMatrices.at(lastWeightMatrixIndex), dC0_cw->transpose(), newWeight); //TODO Multiply with learning rate
-	newWeights.push_back(newWeight);
-	
-
-	// Move from last hidden to input layer
-	for(int layer_index = outputLayerIndex - 1; layer_index > 0; layer_index--)
+void NeuralNetwork::gradientDescent()
+{
+	std::cout << "Learning rate: " << learningRate << std::endl;
+	learningRate /= momentum;
+	for(int weight_index = 0; weight_index < W.size(); weight_index++)
 	{
-		// Calculate dC0_da_L-1
-		Matrix* weightRightOfCurrentLayer = weightMatrices.at(layer_index);
-		Matrix* previousLayerError = vector_dC0_ca.back();
-		derivedLayer = layers.at(layer_index + 1)->matrixifyDerivedValues();
+		int rows = W.at(weight_index)->getNumRows();
+		int cols = W.at(weight_index)->getNumCols();
 
-		Operations::HadamardProduct(derivedLayer, previousLayerError, hadamardProduct);
-		Matrix* thisLayerError = new Matrix(weightRightOfCurrentLayer->getNumRows(), hadamardProduct->getNumCols(), false);
-		Operations::MultiplyMatrices(weightRightOfCurrentLayer, hadamardProduct, thisLayerError);
-		vector_dC0_ca.push_back(thisLayerError);
+		int dC_dw_index = dC_dw.size() - weight_index - 1;
 
-		// Calculate dC0_cw_L-1
+		Matrix* newWeightMatrix = new Matrix(rows, cols, false);
+		Matrix* lr_m = new Matrix(rows, cols, false);
+		lr_m->populate(learningRate);
+		
 
-		// Check if next layer is input layer
-		if(layer_index - 1 == 0)
-		{
-			activatedPreviousLayer = layers.at(layer_index - 1)->matrixifyValues()->transpose();
-			derivedLayer = new Matrix(thisLayerError->getNumRows(), thisLayerError->getNumCols(), false);
-		}
-		else
-		{
-			activatedPreviousLayer = this->layers.at(layer_index)->matrixifyActivatedValues()->transpose();
-			derivedLayer = layers.at(layer_index - 1)->matrixifyDerivedValues();
-		}
-		hadamardProduct = new Matrix(thisLayerError->getNumRows(), thisLayerError->getNumCols(), false);
-		Operations::HadamardProduct(derivedLayer, thisLayerError, hadamardProduct);
+		Matrix* lr_m_dC_dw = new Matrix(rows, cols, false);
 
-		dC0_cw = new Matrix(hadamardProduct->getNumRows(), activatedPreviousLayer->getNumCols(), false);
-		Operations::MultiplyMatrices(hadamardProduct, activatedPreviousLayer, dC0_cw);
-		vector_dC0_cw.push_back(dC0_cw->transpose());
-
-		newWeight = new Matrix(dC0_cw->getNumCols(), dC0_cw->getNumRows(), false);
-		Operations::SubtractMatrices(weightMatrices.at(layer_index - 1), vector_dC0_cw.back(), newWeight);
-		newWeights.push_back(newWeight);
-
-		// Free up pointers
-		delete weightRightOfCurrentLayer;
-		delete previousLayerError;
-		delete thisLayerError;
+		LinearAlgebra::Operations::HadamardProduct(lr_m, dC_dw.at(dC_dw_index), lr_m_dC_dw);
+		LinearAlgebra::Operations::SubtractMatrices(W.at(weight_index), lr_m_dC_dw, newWeightMatrix);
+		W.at(weight_index) = newWeightMatrix;
 	}
-
-	
-	delete derivedLayer;
-	delete hadamardProduct;
-	delete activatedPreviousLayer;
-	delete dC0_cw;
-
-
-	reverse(newWeights.begin(), newWeights.end());
-	weightMatrices = newWeights;
 }

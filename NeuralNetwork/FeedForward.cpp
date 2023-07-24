@@ -3,34 +3,34 @@
 
 void NeuralNetwork::feedForward()
 {
-	Matrix* a; // Matrix of neurons to the left
-	Matrix* b; // Matrix of weights between a and
-	Matrix* c; // Matrix of neurons to the right
-
-	for(int i = 0; i < (this->topologySize - 1); i++)
+	for(int i = 1; i < topologySize; i++)
 	{
-		a = this->getNeuronMatrix(i);
-		b = this->getWeightMatrix(i);
-		c = new Matrix(
-			b->getNumCols(),
-			1,
-			false
-		);
+		// get w_L
+		Matrix* w_L = getWeightMatrix(i - 1);
 
-		if(i != 0)
+		// get a_L-1
+		Matrix* a_L_1;
+		if (i - 1 != 0)
 		{
-			a = this->getActivatedNeuronMatrix(i);
+			a_L_1 = getActivatedNeuronMatrix(i - 1);
+		}
+		else
+		{
+			a_L_1 = getNeuronMatrix(i - 1);
 		}
 
-		Operations::MultiplyMatrices(b->transpose(), a, c);
+		// get b_L For now always 1
+		Matrix* b_L = getBiasMatrix(i);
 
-		for(int r_index = 0; r_index < c->getNumRows(); r_index++)
+		// compute z_L
+		Matrix* z_L = new Matrix(topology.at(i), 1, false);
+
+		LinearAlgebra::Operations::CalculateInputToNextLayer(w_L, a_L_1, b_L, z_L);
+
+		// compute a_L
+		for(int r_index = 0; r_index < z_L->getNumRows(); r_index++)
 		{
-			this->setNeuronValue(i + 1, r_index, c->getValue(r_index, 0) + this->bias);
+			setNeuronValue(i, r_index, z_L->getValue(r_index, 0));
 		}
-
-		delete a;
-		delete b;
-		delete c;
 	}
 }

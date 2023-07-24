@@ -31,16 +31,16 @@ public:
 	void derive();
 
 	//getters
-	double getValue() { return this->val; }
-	double getActivatedValue() { return this->activatedValue; }
-	double getDerivedValue() { return this->derivedValue; }
+	double getValue() { return value; }
+	double getActivatedValue() { return activatedValue; }
+	double getDerivedValue() { return derivedValue; }
 
 	// Setter
-	void setValue(double val) { this->val = val; };
+	void setValue(double newValue);
 
 private:
 	// The non activated neuron value
-	double val;
+	double value;
 
 	double bias;
 

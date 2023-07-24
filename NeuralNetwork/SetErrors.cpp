@@ -1,20 +1,22 @@
 #include  "NeuralNetwork.h"
+#include "../Math/LinearAlgebra/Operations.h"
 
 void NeuralNetwork::setErrors()
 {
-	if(target.size() == 0)
+	if(getCurrentTarget().size() == 0)
 	{
 		cerr << "No target for this neural network" << endl;
 		assert(false);
 	}
 
-	int outputLayerSize = layers.at(layers.size() - 1)->getNeurons().size();
-	if(target.size() != outputLayerSize)
+	int outputLayerSize = topology.back();
+
+	if(getCurrentTarget().size() != outputLayerSize)
 	{
-		cerr << "Target size (" << target.size() << ") is not the same as output layer size: " << outputLayerSize << endl;
-		for (int i = 0; i < target.size(); i++)
+		cerr << "Target size (" << getCurrentTarget().size() << ") is not the same as output layer size: " << outputLayerSize << endl;
+		for (int i = 0; i < getCurrentTarget().size(); i++)
 		{
-			cout << target.at(i) << endl;
+			cout << getCurrentTarget().at(i) << endl;
 		}
 	}
 
@@ -32,18 +34,27 @@ void NeuralNetwork::setErrors()
 
 void NeuralNetwork::setErrorMSE()
 {
-	int outputLayerIndex = layers.size() - 1;
+	int outputLayerIndex = topologySize - 1;
 	vector<Neuron*> outputNeurons = layers.at(outputLayerIndex)->getNeurons();
 
-	error = 0.00;
-	for(int i = 0; i < target.size();i++)
+	errorOverAllOutputNeurons = 0.00;
+	for(int i = 0; i < outputNeurons.size();i++)
 	{
-		double t = target.at(i);
-		double y = outputNeurons.at(i)->getActivatedValue();
+		double y = getCurrentTarget().at(i);
+		double a = outputNeurons.at(i)->getActivatedValue();
 
-		errors.at(i) = 0.5 * pow(abs(t - y), 2);
-		derivedErrors.at(i) = (y - t);
+		// TODO Cost function in separate function
 
-		error += errors.at(i);
+		double tmp = a - y;
+		double C = 0.5 * pow(tmp, 2);
+		double dC = tmp;
+
+		outputErrors->setValue(i, 0, C);
+		derivedOutputErrors->setValue(i, 0, dC);
+		errorOverAllOutputNeurons += outputErrors->getValue(i, 0);
+
 	}
+	Matrix* delta_L = new Matrix(outputNeurons.size(), 1, false);
+	LinearAlgebra::Operations::HadamardProduct(derivedOutputErrors, layers.at(outputLayerIndex)->matrixifyDerivedValues(), delta_L);
+	deltas.push_back(delta_L);
 }

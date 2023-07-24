@@ -15,6 +15,7 @@ public:
 	void setValue(int indexOfNeuron, double value);
 
 	Matrix* matrixifyValues(); // Return nx1 matrix
+	Matrix* matrixifyBiasValues(); 
 	Matrix* matrixifyActivatedValues();
 	Matrix* matrixifyDerivedValues();
 
@@ -26,4 +27,5 @@ public:
 private:
 	int size;
 	vector<Neuron*> neurons;
+	Matrix* biases;
 };

@@ -19,8 +19,8 @@ namespace LinearAlgebra
 		Matrix* copy();
 
 		void populate(double value); //Pass lambda
-		void setValue(int row, int column, double value) { this->values.at(row).at(column) = value; }
-		double getValue(int row, int column) { return this->values.at(row).at(column); }
+		void setValue(int row, int column, double value) { values.at(row).at(column) = value; }
+		double getValue(int row, int column) { return values.at(row).at(column); }
 		int getNumRows() { return this->numRows; }
 		int getNumCols() { return this->numCols; }
 		tuple<int, int> getShape();

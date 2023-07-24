@@ -8,6 +8,7 @@ Layer::Layer(int size)
 	{
 		this->neurons.push_back(new Neuron(1.00));
 	}
+	biases = new Matrix(getSize(), 1, true);
 }
 
 Layer::Layer(int size, ActivationFunc activation)
@@ -17,6 +18,7 @@ Layer::Layer(int size, ActivationFunc activation)
 	{
 		this->neurons.push_back(new Neuron(1.00, activation));
 	}
+	biases = new Matrix(getSize(), 1, true);
 }
 
 Layer::Layer(int size, vector<ActivationFunc> activations)
@@ -26,6 +28,8 @@ Layer::Layer(int size, vector<ActivationFunc> activations)
 	{
 		this->neurons.push_back(new Neuron(1.00, activations.at(i)));
 	}
+	biases = new Matrix(getSize(), 1, true);
+
 }
 
 void Layer::setValue(int indexOfNeuron, double value)
@@ -35,7 +39,8 @@ void Layer::setValue(int indexOfNeuron, double value)
 		cerr << "Index is invalid: " << size << " < 0" << endl;
 		assert(false);
 	}
-	this->neurons.at(indexOfNeuron)->setValue(value);
+	neurons.at(indexOfNeuron)->setValue(value);
+	
 }
 
 void Layer::setSize(int size)
@@ -56,6 +61,13 @@ Matrix* Layer::matrixifyValues()
 	{
 		m->setValue(i, 0, this->getNeurons().at(i)->getValue());
 	}
+	return m;
+}
+
+Matrix* Layer::matrixifyBiasValues()
+{
+	Matrix* m = new Matrix(getSize(), 1, false);
+	m->populate(0);
 	return m;
 }
 

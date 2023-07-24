@@ -2,98 +2,93 @@
 
 void NeuralNetwork::setCurrentInput(vector<double> input)
 {
-	this->input = input;
-	for (int i = 0; i < this->layers.at(0)->getSize(); i++)
+	_input = input;
+	for (int i = 0; i < layers.at(0)->getSize(); i++)
 	{
-		this->layers.at(0)->setValue(i, this->input.at(i));
+		layers.at(0)->setValue(i, input.at(i));
 	}
 }
 
 NeuralNetwork::NeuralNetwork(
-	vector<int> topology,
-	double bias,
-	double learningRate,
-	double momentum
+	/*topology*/vector<int> t,
+	/*learning rate*/double lr,
+	/*momentum*/double m
 )
 {
-	this->topology		= topology;
-	this->topologySize	= this->topology.size();
-	this->bias			= bias;
-	this->learningRate	= learningRate;
-	this->momentum		= momentum;
+	topology		= t;
+	topologySize	= t.size();
+	learningRate	= lr;
+	momentum		= m;
 
-	for(int i = 0; i < this->topologySize; i++)
+	// Fill vector of Layer objects
+	for(int i = 0; i < topologySize; i++)
 	{
-		this->layers.push_back(new Layer(this->topology.at(i)));
+		layers.push_back(new Layer(topology.at(i)));
 	}
 
-	for(int i = 0; i < this->topologySize - 1; i++)
+	// Fill vector of Weight Matrices
+	for(int i = 0; i < topologySize - 1; i++)
 	{
-		auto weightMatrix = new Matrix(this->topology.at(i), this->topology.at(i+1), true);
-		this->weightMatrices.push_back(weightMatrix);
+		W.push_back(new Matrix(topology.at(i + 1), topology.at(i), true));
 	}
 
-	for(int i = 0; i < this->topology.at(this->topologySize - 1); i++)
-	{
-		this->errors.push_back(0.00);
-		this->derivedErrors.push_back(0.00);
-	}
-
-	this->error = 0.00;
+	outputErrors = new Matrix(topology.back(), 1, false);
+	derivedOutputErrors = new Matrix(topology.back(), 1, false);
+	errorOverAllOutputNeurons = 0.00;
 }
 
-NeuralNetwork::NeuralNetwork(
-	vector<int> topology,
-	ActivationFunc hiddenActivationType,
-	ActivationFunc outputActivationType,
-	CostFunctionType costFunction,
-	double bias,
-	double learningRate,
-	double momentum
-)
-{
-	this->topology		 = topology;
-	this->topologySize	 = this->topology.size();
-	this->bias			 = bias;
-	this->learningRate	 = learningRate;
-	this->momentum		 = momentum;
-
-	this->hiddenActivationType	 = hiddenActivationType;
-	this->outputActivationType	 = outputActivationType;
-	this->costFunction			 = costFunction;
-
-	for (int i = 0; i < this->topologySize; i++)
-	{
-		//Todo implement dict topology {<layer number neurons>: activation function for layer}
-		if(i > 0 && i < (this->topologySize - 1))
-		{
-			this->layers.push_back(new Layer(this->topology.at(i), this->hiddenActivationType));
-		}
-		else if(i == (this->topologySize - 1))
-		{
-			this->layers.push_back(new Layer(this->topology.at(i), this->outputActivationType));
-
-		}
-		else
-		{
-			// Input layer has always default act. function e.g. FSF
-			this->layers.push_back(new Layer(this->topology.at(i)));
-		}
-		
-	}
-
-	for (int i = 0; i < this->topologySize - 1; i++)
-	{
-		auto weightMatrix = new Matrix(this->topology.at(i), this->topology.at(i + 1), true);
-		this->weightMatrices.push_back(weightMatrix);
-	}
-
-	for (int i = 0; i < this->topology.at(this->topologySize - 1); i++)
-	{
-		this->errors.push_back(0.00);
-		this->derivedErrors.push_back(0.00);
-	}
-
-	this->error = 0.00;
-
-}
+//NeuralNetwork::NeuralNetwork(
+//	vector<int> topology,
+//	ActivationFunc hiddenActivationType,
+//	ActivationFunc outputActivationType,
+//	CostFunctionType costFunction,
+//	double bias,
+//	double learningRate,
+//	double momentum
+//)
+//{
+//	topology		 = topology;
+//	topologySize	 = topology.size();
+//	bias			 = bias;
+//	learningRate	 = learningRate;
+//	momentum		 = momentum;
+//
+//	hiddenActivationType	 = hiddenActivationType;
+//	outputActivationType	 = outputActivationType;
+//	costFunction			 = costFunction;
+//
+//	for (int i = 0; i < topologySize; i++)
+//	{
+//		//Todo implement dict topology {<layer number neurons>: activation function for layer}
+//		if(i > 0 && i < (topologySize - 1))
+//		{
+//			layers.push_back(new Layer(topology.at(i), hiddenActivationType));
+//		}
+//		else if(i == (topologySize - 1))
+//		{
+//			layers.push_back(new Layer(topology.at(i), outputActivationType));
+//
+//		}
+//		else
+//		{
+//			// Input layer has always default act. function e.g. FSF
+//			layers.push_back(new Layer(topology.at(i)));
+//		}
+//		
+//	}
+//
+//	for (int i = 0; i < topologySize - 1; i++)
+//	{
+//		auto weightMatrix = new Matrix(topology.at(i), topology.at(i + 1), true);
+//		weightMatrices.push_back(weightMatrix);
+//	}
+//
+//	for (int i = 0; i < topology.at(topologySize - 1); i++)
+//	{
+//		errors.push_back(0.00);
+//		derivedErrors.push_back(0.00);
+//	}
+//
+//	error = 0.00;
+//
+//}

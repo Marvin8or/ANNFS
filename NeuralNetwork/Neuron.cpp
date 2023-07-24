@@ -21,40 +21,49 @@ double d_rectifiedLinearUnit(double x)
 	if (x < 0) return 0;
 	return 1;
 }
-Neuron::Neuron(double value)
+Neuron::Neuron(double newValue)
 {
-	this->val = value;
+	value = newValue;
 	// Set default activation function to FSF
-	this->activationFunction = &fastSigmoidFunction;
-	this->d_activationFunction = &d_fastSigmoidFunction;
-	this->activate();
-	this->derive();
+	activationFunction = &fastSigmoidFunction;
+	d_activationFunction = &d_fastSigmoidFunction;
+	activate();
+	derive();
 }
 
-Neuron::Neuron(double value, ActivationFunc activation)
+Neuron::Neuron(double newValue, ActivationFunc activation)
 {
-	this->val = value;
+	value = newValue;
 	switch (activation)
 	{
 	case 1:
-		this->activationFunction = &fastSigmoidFunction;
-		this->d_activationFunction = &d_fastSigmoidFunction;
+		activationFunction = &fastSigmoidFunction;
+		d_activationFunction = &d_fastSigmoidFunction;
 		break;
 	case 2:
-		this->activationFunction = &rectifiedLinearUnit;
-		this->d_activationFunction = &d_rectifiedLinearUnit;
+		activationFunction = &rectifiedLinearUnit;
+		d_activationFunction = &d_rectifiedLinearUnit;
 		break;
 	}
-	this->activate();
-	this->derive();
+	activate();
+	derive();
 }
 
 void Neuron::activate()
 {
-	this->activatedValue = this->activationFunction(this->getValue());
+	activatedValue = activationFunction(getValue());
 }
 
 void Neuron::derive()
 {
-	this->derivedValue = this->d_activationFunction(this->getValue());
+	derivedValue = d_activationFunction(getValue());
 }
+
+void Neuron::setValue(double newValue)
+{
+	value = newValue;
+	activatedValue = activationFunction(newValue);
+	derivedValue = d_activationFunction(newValue);
+}
+
+
