@@ -1,4 +1,5 @@
 #include "Math/LinearAlgebra/Matrix.h"
+#include <utility>
 #include <iostream>
 
 
@@ -6,12 +7,17 @@ int main()
 {
 
 
-	Matrix<double> a(5, 3, true);
-	Matrix<double> b(5, 3, true);
-	std::cout << a;
-	std::cout << b;
-	Matrix<double> z = a.add(b);
-	std::cout << z;
+	Matrix<double> a = { {1, 1, 1},
+						{1, 1, 1},
+						{1, 1, 1} };
+
+	Matrix<double> b = { {2, 2, 2},
+						{2, 2, 2},
+						{2, 2, 2} };
+
+	Matrix<double> c = a;
+
+	std::cout << c << std::endl;
 	//double learningRate = 0.75;
 	//double momentum = 1;
 	//double bias = 0;
