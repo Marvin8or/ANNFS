@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <sstream>
 #include <initializer_list>
-#include "utils.h"
+#include "../Utils/utils.h"
 
 using namespace std;
 typedef unsigned int uint;
@@ -343,11 +343,11 @@ Matrix<T> Matrix<T>::divide(const T& value) const
 template <class T>
 Matrix<T> Matrix<T>::dot(const Matrix<T>& matrix) const
 {
-	if (!(rows_ == matrix.getCols() && cols_ == matrix.getRows()))
+	if (!(cols_ == matrix.getRows()))
 		throw std::invalid_argument("Dot product cannot be calculated! Check dimensions.");
 
 	T value = 0;
-	int mCols = matrix.getCols();
+	uint mCols = matrix.getCols();
 	Matrix<T> result(rows_, mCols);
 
 	for(uint a=0; a<rows_; a++)
@@ -388,7 +388,7 @@ Matrix<T> Matrix<T>::applyFunction(T(*function)(T)) const
 	{
 		for (uint j = 0; j < cols_; j++)
 		{
-			result.put(i, j, (*function)(this.get(i, j)));
+			result.put(i, j, (*function)(this->get(i, j)));
 		}
 	}
 	return result;
