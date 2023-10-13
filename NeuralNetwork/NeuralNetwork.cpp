@@ -43,7 +43,7 @@ void NeuralNetwork::initialize_matrices()
 	neuronValues.push_back(Matrix<double>(1, topology_.back()));
 }
 
-NeuralNetwork::NeuralNetwork(const std::vector<uint>& topology)
+NeuralNetwork::NeuralNetwork(const std::vector<uint>& topology, const ELossFunction& loss)
 {
 	if (!(topology.size() > 1))
 		throw std::invalid_argument("Number of layers in topology is not sufficient!");
@@ -56,7 +56,16 @@ NeuralNetwork::NeuralNetwork(const std::vector<uint>& topology)
 	layerNum = topology_.size();
 	weightsNum = topology_.size() - 1;
 	biasesNum = topology_.size() - 1;
+
 	initialize_matrices();
+
+	switch (loss)
+	{
+	case MSE:
+		outputNeuronErrorsFunc = LossFunctions::squared_error;
+		compoundErrorsFunc = LossFunctions::mean_squared_error;
+		break;
+	}
 
 }
 
@@ -70,28 +79,21 @@ void NeuralNetwork::feedForward()
 		tmp += biases.at(i);
 		neuronValues.at(i + 1) = tmp;
 	}
+}
 
-	// square
-	Matrix<double> tmp = neuronValues[neuronValues.size() - 1] - neuronValues[neuronValues.size() - 2];
-	tmp *= tmp;
+void NeuralNetwork::setErrors()
+{
+	neuronValues[topology_.back()] = outputNeuronErrorsFunc(neuronValues[neuronValues.size() - 1], neuronValues[neuronValues.size() - 2]);
+	compoundErrors.push_back(compoundErrorsFunc(neuronValues[topology_.back()]));
+}
 
-	std::cout << tmp;
-
-	double value = 0;
-	for (uint i = 0; i < tmp.getCols(); i++)
-		value += tmp.get(0, i);
-
-	value /= 2;
-
-	std::cout << value << std::endl;
-	lossFunctionErrors.push_back(value);
-
-	errors.push_back(tmp); 
-
+void NeuralNetwork::backpropagation()
+{
+	uint lastLayerIndx = layerNum - 1;
 
 }
 
-void NeuralNetwork::summary()
+void NeuralNetwork::summary() const
 {
 	std::cout << "Topology: ";
 	for (uint i = 0; i < layerNum; i++)
@@ -123,6 +125,9 @@ void NeuralNetwork::summary()
 
 void NeuralNetwork::setInputValues(std::initializer_list<double> inputs, std::initializer_list<double> targets)
 {
+	if (!(inputs.size() == neuronValues.front().getCols() && targets.size() == neuronValues.back().getCols()))
+		throw std::invalid_argument("Invalid dimension for inputs or targets!");
+
 	Matrix<double> tmpInput(1, inputs.size()), tmpTarget(1, targets.size());;
 	for (uint i = 0; i < inputs.size(); i++)
 		tmpInput.put(0, i, *(inputs.begin() + i));

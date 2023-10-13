@@ -11,6 +11,7 @@ add_executable(ANNFS main.cpp)
 
 target_link_libraries(ANNFS PUBLIC Utils)
 target_link_libraries(ANNFS PUBLIC NeuralNetwork)
+
 target_include_directories(ANNFS PRIVATE "${PROJECT_SOURCE_DIR}/Math/LinearAlgebra/Matrix.h")
 
 target_include_directories(ANNFS PUBLIC

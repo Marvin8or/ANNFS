@@ -1,17 +1,22 @@
 #include "NeuralNetwork/NeuralNetwork.h"
+#include "LossFunctions.h"
 
 int main()
 {
 	std::vector<uint> topology{ 4, 3, 2 };
 	NeuralNetwork nn = NeuralNetwork(
-		topology
+		topology,
+		MSE
 	);
 	nn.setInputValues({ 1, 2, 3, 4 }, {0, 1});
 	nn.feedForward();
-
+	nn.setErrors();
+	nn.backpropagation();
 
 	nn.setInputValues({ 2, 3, 4, 5 }, { 1, 2 });
 	nn.feedForward();
+	nn.setErrors();
+	nn.backpropagation();
 	//NeuralNetwork nn = NeuralNetwork(
 	//	learningRate,
 	//	momtentum
