@@ -13,6 +13,12 @@ Matrix<double> LossFunctions::squared_error(const Matrix<double>& y, const Matri
 	return result;
 }
 
+Matrix<double> LossFunctions::squared_error_derived(const Matrix<double>& y, const Matrix<double>& y_hat)
+{
+	Matrix<double> result = 2.0 * (y - y_hat);
+	return result;
+}
+
 double LossFunctions::mean_squared_error(const Matrix<double>& errors)
 {
 	double result = 0;

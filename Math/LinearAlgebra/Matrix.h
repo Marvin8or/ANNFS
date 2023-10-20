@@ -354,7 +354,7 @@ Matrix<T> Matrix<T>::dot(const Matrix<T>& matrix) const
 	{
 		for(uint b=0; b<mCols; b++)
 		{
-			for(uint c=0; c<rows_; c++)
+			for(uint c=0; c<cols_; c++)
 			{
 				value += this->get(a, c) * matrix.get(c, b);
 			}
@@ -369,12 +369,12 @@ Matrix<T> Matrix<T>::dot(const Matrix<T>& matrix) const
 template <class T>
 Matrix<T> Matrix<T>::transpose() const
 {
-	Matrix<T> result(rows_, cols_, 0.0);
+	Matrix<T> result(cols_, rows_, 0.0);
 	for(uint i=0; i<rows_; i++)
 	{
 		for(uint j=0; j<cols_; j++)
 		{
-			result.put(i, j, this.get(j, i));
+			result.put(j, i, this->get(i, j));
 		}
 	}
 	return result;
