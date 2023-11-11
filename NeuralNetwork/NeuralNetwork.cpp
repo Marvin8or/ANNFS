@@ -68,6 +68,9 @@ void NeuralNetwork::initialize_matrices()
 	}
 	// Add target layer
 	neuronValues.push_back(Matrix<double>(1, topology_.back()));
+
+	// Setup output neurons pointer
+	outputNeuronErrorsPtr = std::make_unique<Matrix<double>>(1, topology_.back());
 #endif
 }
 
@@ -76,6 +79,7 @@ void NeuralNetwork::print_predictions() const
 	std::cout << "Predictions: ";
 	std::cout << neuronValues[layerNum - 1];
 }
+
 
 NeuralNetwork::NeuralNetwork(const std::vector<uint>& topology, const double& learningRate, const ELossFunction& loss)
 {
@@ -103,10 +107,50 @@ NeuralNetwork::NeuralNetwork(const std::vector<uint>& topology, const double& le
 	case MSE:
 		outputNeuronErrorsFunc = LossFunctions::squared_error;
 		outputNeuronErrorsFuncDerived = LossFunctions::squared_error_derived;
-		compoundErrorsFunc = LossFunctions::mean_squared_error;
+		compoundErrorFunc = LossFunctions::mean_squared_error;
 		break;
 	}
 
+}
+
+void NeuralNetwork::setInputValues(std::vector<double> inputs)
+{
+	if (!(inputs.size() == neuronValues.front().getCols()))
+		throw std::invalid_argument("Invalid dimension for inputs!");
+
+	Matrix<double> tmpInput(1, inputs.size());
+	for (uint i = 0; i < inputs.size(); i++)
+		tmpInput.put(0, i, *(inputs.begin() + i));
+	neuronValues[0] = tmpInput;
+}
+
+void NeuralNetwork::setTargetValues(std::vector<double> targets)
+{
+	if (!(targets.size() == neuronValues.back().getCols()))
+		throw std::invalid_argument("Invalid dimension for targets!");
+
+	Matrix<double> tmpTarget(1, targets.size());;
+	for (uint i = 0; i < targets.size(); i++)
+		tmpTarget.put(0, i, *(targets.begin() + i));
+	neuronValues[neuronValues.size() - 1] = tmpTarget;
+}
+
+void NeuralNetwork::setInputValues(
+	std::initializer_list<double> inputs,
+	std::initializer_list<double> targets
+)
+{
+	if (!(inputs.size() == neuronValues.front().getCols() && targets.size() == neuronValues.back().getCols()))
+		throw std::invalid_argument("Invalid dimension for inputs or targets!");
+
+	Matrix<double> tmpInput(1, inputs.size()), tmpTarget(1, targets.size());;
+	for (uint i = 0; i < inputs.size(); i++)
+		tmpInput.put(0, i, *(inputs.begin() + i));
+	neuronValues[0] = tmpInput;
+
+	for (uint i = 0; i < targets.size(); i++)
+		tmpTarget.put(0, i, *(targets.begin() + i));
+	neuronValues[neuronValues.size() - 1] = tmpTarget;
 }
 
 void NeuralNetwork::feedForward()
@@ -119,8 +163,10 @@ void NeuralNetwork::feedForward()
 		Matrix<double> a_d = z;
 		a = a.applyFunction(rectifiedLinearUnit);
 		a_d = a_d.applyFunction(d_rectifiedLinearUnit);
+#if DEBUG==ON
 		std::cout << a << std::endl;
 		std::cout << a_d << std::endl;
+#endif
 		neuronValues.at(i + 1) = a;
 		neuronValuesDerived.at(i + 1) = a_d;
 	}
@@ -136,8 +182,9 @@ void NeuralNetwork::setErrors()
 	std::cout << "ERROR: " << std::endl;
 	std::cout << error << "\n" << std::endl;
 #else
-	outputNeuronErrors.push_back(outputNeuronErrorsFunc(neuronValues[neuronValues.size() - 1], neuronValues[neuronValues.size() - 2]));
-	compoundErrors.push_back(compoundErrorsFunc(outputNeuronErrors.back()));
+	*outputNeuronErrorsPtr = outputNeuronErrorsFunc(neuronValues[neuronValues.size() - 1], neuronValues[neuronValues.size() - 2]);
+	//std::cout << *outputNeuronErrorsPtr;
+	compoundError = compoundErrorFunc(*outputNeuronErrorsPtr);
 #endif
 }
 
@@ -199,9 +246,64 @@ void NeuralNetwork::gradientDescent()
 	}
 }
 
-void NeuralNetwork::train()
+void NeuralNetwork::train(const std::vector<std::vector<double>>& inputs,
+						  const std::vector<std::vector<double>>& targets,
+						  const uint& nepochs)
 {
-	
+	// Check if inputs and targets are not empty
+	if (!(inputs.size() != 0 && targets.size() != 0))
+		throw std::invalid_argument("Cannot pass empty 2d vectors!");
+
+	// Check if inputs and targets have same number of rows
+	if (!(inputs.size() == targets.size()))
+		throw std::invalid_argument("inputs.rows() != targets.rows()");
+
+	// Check if inputs have same number of columns as first layer fo nn
+	if (!(inputs[0].size() == topology_[0]))
+		throw std::invalid_argument("Number of columns in INPUT dataset doesnt match number of neurons in input layer");
+
+	// Check if targets have same number of columns as last layer of nn
+	if (!(targets[0].size() == topology_[layerNum - 1]))
+		throw std::invalid_argument("Number of columns in INPUT dataset doesnt match number of neurons in input layer");
+
+	auto examples = inputs.size();
+
+	// iterate through each row
+	for (uint epoch = 0; epoch < nepochs; epoch++)
+	{
+		std::cout << "Epoch: " << epoch + 1 << std::endl;
+
+		for (auto example = 0; example < examples; example++)
+		{
+			setInputValues(inputs[example]);
+			setTargetValues(targets[example]);
+			feedForward();
+			setErrors();
+			backpropagation();
+			gradientDescent();
+		}
+		std::cout << "Epoch Error: " << compoundError << std::endl;
+		epochErrors.push_back(compoundError);
+		//print_predictions();
+	}
+}
+
+std::vector<Matrix<double>> NeuralNetwork::predict(const vector2D& inputs)
+{
+	// Check if inputs have same number of columns as first layer fo nn
+	if (!(inputs[0].size() == topology_[0]))
+		throw std::invalid_argument("Number of columns in INPUT dataset doesnt match number of neurons in input layer");
+
+	std::vector<Matrix<double>> predictions;
+
+	for (auto example = 0; example < inputs.size() - 1; example++)
+	{
+		setInputValues(inputs[example]);
+		feedForward();
+		Matrix<double> tmp = neuronValues[layerNum - 1];
+		predictions.push_back(tmp);
+	}
+	return predictions;
 }
 
 void NeuralNetwork::summary() const
@@ -234,17 +336,3 @@ void NeuralNetwork::summary() const
 	}
 }
 
-void NeuralNetwork::setInputValues(std::initializer_list<double> inputs, std::initializer_list<double> targets)
-{
-	if (!(inputs.size() == neuronValues.front().getCols() && targets.size() == neuronValues.back().getCols()))
-		throw std::invalid_argument("Invalid dimension for inputs or targets!");
-
-	Matrix<double> tmpInput(1, inputs.size()), tmpTarget(1, targets.size());;
-	for (uint i = 0; i < inputs.size(); i++)
-		tmpInput.put(0, i, *(inputs.begin() + i));
-	neuronValues[0] = tmpInput;
-
-	for (uint i = 0; i < targets.size(); i++)
-		tmpTarget.put(0, i, *(targets.begin() + i));
-	neuronValues[neuronValues.size() - 1] = tmpTarget;
-}

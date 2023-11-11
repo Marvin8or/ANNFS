@@ -1,5 +1,5 @@
 #include "utils.h"
-
+#include <set>
 double generateRandomNumber()
 {
 	std::random_device rd;

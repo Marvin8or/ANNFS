@@ -2,11 +2,13 @@
 #define NEURAL_NETWORK_H
 #define ON 1
 #define OFF 0
-#define DEBUG ON
+#define DEBUG OF
 #include <vector>
+#include <utility>
 #include "../Math/LinearAlgebra/Matrix.h"
 #include "LossFunctions.h"
 
+typedef std::vector<std::vector<double>> vector2D;
 
 double fastSigmoidFunction(double x); //Static
 double d_fastSigmoidFunction(double x);
@@ -27,12 +29,14 @@ private:
 	std::vector<Matrix<double>> neuronValues;
 	std::vector<Matrix<double>> neuronValuesDerived;
 
-	std::vector<Matrix<double>> outputNeuronErrors; // vector that contains [1 x <num-ouput-neurons>] matrices that represent the errors of each output neuron after feedforward
 	Matrix<double>(*outputNeuronErrorsFunc)(const Matrix<double>&, const Matrix<double>&);
 	Matrix<double>(*outputNeuronErrorsFuncDerived)(const Matrix<double>&, const Matrix<double>&);
 
-	std::vector<double>			compoundErrors;		// vector of values that represent the value of error after loss function
-	double (*compoundErrorsFunc) (const Matrix<double>&);
+	std::unique_ptr<Matrix<double>>	outputNeuronErrorsPtr; // Matrix 1x<num-ouput-neurons> that contains the errors of each output neuron, updated after each feedforward
+	double							compoundError;		// compound error, updated after each feedforward
+	std::vector<double>				epochErrors;		// Error after each epoch
+
+	double (*compoundErrorFunc) (const Matrix<double>&);
 
 	std::vector<Matrix<double>> deltasBackprop;
 	std::vector<Matrix<double>> deltaWeights;
@@ -44,13 +48,20 @@ private:
 public:
 	NeuralNetwork(const std::vector<uint>& topology, const double& learningRate, const ELossFunction& loss);
 	void setInputValues(std::initializer_list<double> inputs, std::initializer_list<double> targets);
+	void setInputValues(std::vector<double> inputs);
+	void setTargetValues(std::vector<double> targets);
+
 	void feedForward();
 	void setErrors();
 	void backpropagation();
 	void gradientDescent();
 
+	void train(const std::vector<std::vector<double>>& inputs, 
+			   const std::vector<std::vector<double>>& targets,
+			   const uint& nepochs);
 
-	void train();
+	std::vector<Matrix<double>> predict(const vector2D& inputs);
+
 	void summary() const;
 	void print_predictions() const;
 	
