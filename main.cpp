@@ -1,9 +1,12 @@
 #include "NeuralNetwork/NeuralNetwork.h"
-#include "LossFunctions.h"
+#include "../ThirdParty/json.hpp"
+#include <iostream>
+#include <fstream>
 
-
+using json = nlohmann::json;
 // TODO vector2D Matrix
-int main()
+
+void initial_nn_implementation_example()
 {
 	std::vector<uint> topology{ 4, 3, 2 };
 	NeuralNetwork nn = NeuralNetwork(
@@ -11,28 +14,13 @@ int main()
 		0.01,
 		MSE
 	);
-	//nn.summary();
-	
+	nn.summary();
 	int epochs = 700;
-
-	//auto training_inputs = vector2D{ {0.264983 ,0.561863 ,0.124875 ,0.893281},
-	//						{0.731487 ,0.665182 ,0.944304 ,0.780735},
-	//						{0.488565 ,0.319929 ,0.057103 ,0.119785},
-	//						{0.642041 ,0.936592 ,0.826147 ,0.317345},
-	//						{0.184974 ,0.702384 ,0.872834 ,0.991872}};
-
-
 	auto training_inputs = vector2D{ {1.2, 0.8, 0.5, 1.0},
 									 { 0.4, 0.3, 0.9, 0.2},
 									 { 0.9, 0.6, 0.7, 0.5},
 									 { 0.2, 0.5, 0.3, 0.8},
 									 { 0.7, 1.0, 0.4, 0.6} };
-
-	//auto training_targets = vector2D{ {0.524632 ,0.189419},
-	//						{0.432819 ,0.811143},
-	//						{0.675018 ,0.342973},
-	//						{0.159135 ,0.783314},
-	//						{0.952368 ,0.493812}};
 
 	auto training_targets = vector2D{ {0, 1},		// Class 1
 									  {1, 0},		// Class 2
@@ -49,31 +37,51 @@ int main()
 	for (auto pred : predictions)
 		std::cout << pred;
 
-	//nn.setInputValues({ 1, 2, 3, 4 }, {200, 300});
-	//nn.feedForward();
-	//nn.setErrors();
-	//nn.backpropagation();
-	//nn.gradientDescent();
-	//nn.print_predictions();
+}
 
-	//nn.setInputValues({ 2, 3, 4, 5 }, { 200, 300});
-	//nn.feedForward();
-	//nn.setErrors();
-	//nn.backpropagation();
-	//nn.gradientDescent();
-	//nn.print_predictions();
-	//NeuralNetwork nn = NeuralNetwork(
-	//	learningRate,
-	//	momtentum
-	//);
+json openConfigurationFile(const std::string& path)
+{
+	
+	std::ifstream jsonFile(path);
 
-	//nn.addLayer(20);
-	//nn.addLayer(10);
-	//nn.addLayer(2);
+	if (!jsonFile.is_open())
+	{
+		std::cerr << "Error opening json file!!" << std::endl;
+	}
 
-	//NeuralNetwork nn = NeuralNetwork(
-	//		jsonFile
-	//);
+	// Read the contents of the file into a string
+	std::string jsonData((std::istreambuf_iterator<char>(jsonFile)), std::istreambuf_iterator<char>());
 
-	//nn.train(input_data, output_data)
+	try {
+		// Parse the JSON string
+		json jsonObj = json::parse(jsonData);
+		// Access the data in jsonObj as needed
+		std::cout << "Parsing successful!\n";
+		return jsonObj;
+
+	}
+	catch (const nlohmann::json::parse_error& e) {
+		std::cerr << "JSON parsing error: " << e.what() << std::endl;
+		std::cerr << "At offset: " << e.byte << std::endl;
+	}
+
+
+}
+
+void json_file_nn_implementation_example()
+{
+	std::string path_to_json = "C:/Users/Gabriel/Documents/Projects/ANNFS/JsonFiles/example_conf_01.json";
+
+	/*
+		Json file has all neccesary hyperparameters 
+	*/
+	auto json_file = openConfigurationFile(path_to_json);
+
+	NeuralNetwork nn = NeuralNetwork(json_file);
+	//nn.train();
+}
+
+int main()
+{
+	json_file_nn_implementation_example();
 }

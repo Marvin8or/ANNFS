@@ -13,6 +13,7 @@ target_link_libraries(ANNFS PUBLIC Utils)
 target_link_libraries(ANNFS PUBLIC NeuralNetwork)
 
 target_include_directories(ANNFS PRIVATE "${PROJECT_SOURCE_DIR}/Math/LinearAlgebra/Matrix.h")
+target_include_directories(ANNFS PRIVATE "${PROJECT_SOURCE_DIR}/ThirdParty/json.hpp")
 
 target_include_directories(ANNFS PUBLIC
                        	  "${PROJECT_BINARY_DIR}"

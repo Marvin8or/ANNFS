@@ -6,9 +6,12 @@
 #include <vector>
 #include <utility>
 #include "../Math/LinearAlgebra/Matrix.h"
+#include "../ThirdParty/json.hpp"
 #include "LossFunctions.h"
 
-typedef std::vector<std::vector<double>> vector2D;
+
+using vector2D = std::vector<std::vector<double>>;
+using json = nlohmann::json;
 
 double fastSigmoidFunction(double x); //Static
 double d_fastSigmoidFunction(double x);
@@ -47,6 +50,8 @@ private:
 
 public:
 	NeuralNetwork(const std::vector<uint>& topology, const double& learningRate, const ELossFunction& loss);
+	NeuralNetwork(const json& json_configuration);
+
 	void setInputValues(std::initializer_list<double> inputs, std::initializer_list<double> targets);
 	void setInputValues(std::vector<double> inputs);
 	void setTargetValues(std::vector<double> targets);
