@@ -113,6 +113,62 @@ NeuralNetwork::NeuralNetwork(const std::vector<uint>& topology, const double& le
 
 }
 
+//TODO redefine uint typdef as uint32, or use already existing
+NeuralNetwork::NeuralNetwork(const json& json_configuration)
+{	
+	json network_json_configuration = json_configuration["network"];
+
+	uint input_size		= network_json_configuration["architecture"]["input_size"];
+	auto hidden_layers  = network_json_configuration["architecture"]["hidden_layers"].get<std::vector<uint>>();
+	uint output_size	= network_json_configuration["architecture"]["output_size"];
+
+	double learningRate	= network_json_configuration["training"]["learning_rate"];
+
+	// retrieve the string value
+	//auto cpp_string = j_string.template get<std::string>();
+
+	auto loss	= network_json_configuration["training"]["loss_function"].get<std::string>();
+
+	//default loss if not defined is MSE
+	if (loss.empty())
+		loss = "MSE";
+
+	if (!(input_size > 0))
+		throw std::invalid_argument("Number of neurons in input layer must be grater than zero!");
+
+	topology_.push_back(input_size);
+
+	for (auto layer : hidden_layers)
+	{
+		if (!(layer >= 0))
+			throw std::invalid_argument("Number of neurons in hidden layer must be grater or equal to zero!");
+
+		topology_.push_back(layer);
+	}
+
+	if (!(output_size > 0))
+		throw std::invalid_argument("Number of neurons in ouput layer must be grater than zero!");
+
+	topology_.push_back(output_size);
+
+	if (!(learningRate > 0.0))
+		throw std::invalid_argument("Learning rate must be greater than zero!");
+
+	this->learningRate = learningRate;
+	layerNum = topology_.size();
+	weightsNum = topology_.size() - 1;
+	biasesNum = topology_.size() - 1;
+
+	initialize_matrices();
+
+	if (loss == "MSE")
+	{
+		outputNeuronErrorsFunc = LossFunctions::squared_error;
+		outputNeuronErrorsFuncDerived = LossFunctions::squared_error_derived;
+		compoundErrorFunc = LossFunctions::mean_squared_error;
+	}
+}
+
 void NeuralNetwork::setInputValues(std::vector<double> inputs)
 {
 	if (!(inputs.size() == neuronValues.front().getCols()))

@@ -5,6 +5,7 @@
 
 using json = nlohmann::json;
 // TODO vector2D Matrix
+// TODO Framework to load the data
 
 void initial_nn_implementation_example()
 {
@@ -70,7 +71,7 @@ json openConfigurationFile(const std::string& path)
 
 void json_file_nn_implementation_example()
 {
-	std::string path_to_json = "C:/Users/Gabriel/Documents/Projects/ANNFS/JsonFiles/example_conf_01.json";
+	std::string path_to_json = "C:/Users/Gabriel/Documents/Projects/ANNFS/JsonFiles/example_conf_02.json";
 
 	/*
 		Json file has all neccesary hyperparameters 
@@ -78,7 +79,9 @@ void json_file_nn_implementation_example()
 	auto json_file = openConfigurationFile(path_to_json);
 
 	NeuralNetwork nn = NeuralNetwork(json_file);
-	//nn.train();
+
+	//TODO decide on how to implement train method when json file is configured
+	nn.train();
 }
 
 int main()
