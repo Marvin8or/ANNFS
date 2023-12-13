@@ -1,13 +1,13 @@
 {
   "network": {
     "architecture": {
-      "input_size": 100,
+      "input_size": 784,
       "hidden_layers": [ 64, 32 ],
       "output_size": 10
     },
     "training": {
       "learning_rate": 0.001,
-      "epochs": 100,
+      "epochs": 1,
       "loss_function": "MSE"
     }
   },

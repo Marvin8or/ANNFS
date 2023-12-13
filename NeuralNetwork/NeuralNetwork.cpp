@@ -331,6 +331,7 @@ void NeuralNetwork::train(const std::vector<std::vector<double>>& inputs,
 
 		for (auto example = 0; example < examples; example++)
 		{
+			std::cout << "example: " << example + 1 << std::endl;
 			setInputValues(inputs[example]);
 			setTargetValues(targets[example]);
 			feedForward();
