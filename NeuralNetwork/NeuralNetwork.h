@@ -2,7 +2,7 @@
 #define NEURAL_NETWORK_H
 #define ON 1
 #define OFF 0
-#define DEBUG OF
+#define DEBUG OFF
 #include <vector>
 #include <utility>
 #include "../Math/LinearAlgebra/Matrix.h"

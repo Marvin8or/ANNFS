@@ -336,6 +336,7 @@ void NeuralNetwork::train(const std::vector<std::vector<double>>& inputs,
 			setTargetValues(targets[example]);
 			feedForward();
 			setErrors();
+			std::cout << "error: " << compoundError << std::endl;
 			backpropagation();
 			gradientDescent();
 		}

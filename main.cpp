@@ -7,73 +7,67 @@
 using json = nlohmann::json;
 // TODO vector2D Matrix
 // TODO Framework to load the data
-
-
-// Define a struct to represent an MNIST image
+// TODO implement gradient checking for backpropagation
+// TODO implement proper way to initialize weight matrices
 struct MNISTImage {
-    std::vector<double> label;            // Label of the digit (0 to 9)
-    std::vector<double> pixels; // Pixel values of the image
+    std::vector<double> label;
+    std::vector<double> pixels;
 };
 
-// Function to read MNIST images from binary files
-std::vector<MNISTImage> readMNISTImages(const std::string& imagePath,
-                     const std::string& labelPath) 
-{
-    std::vector<MNISTImage> images; // Vector to store MNIST images
+std::vector<MNISTImage> readMNISTImages(const std::string& imagePath, const std::string& labelPath) {
+    std::vector<MNISTImage> images;
 
     // Read labels
-    std::ifstream labelFile(labelPath, std::ios::binary); // Open label file in binary mode
+    std::ifstream labelFile(labelPath, std::ios::binary);
     if (!labelFile) {
         std::cerr << "Error opening label file: " << labelPath << std::endl;
-        return images; // Return empty vector if there's an error
+        return images;
     }
 
     int magicNumber;
     int numLabels;
-    labelFile.read(reinterpret_cast<char*>(&magicNumber), sizeof(magicNumber)); // Read magic number
-    labelFile.read(reinterpret_cast<char*>(&numLabels), sizeof(numLabels));     // Read number of labels
-    numLabels = _byteswap_ulong(numLabels); // Swap bytes (MNIST data is in big-endian format)
+    labelFile.read(reinterpret_cast<char*>(&magicNumber), sizeof(magicNumber));
+    labelFile.read(reinterpret_cast<char*>(&numLabels), sizeof(numLabels));
+    numLabels = _byteswap_ulong(numLabels);
 
     // Read images
-    std::ifstream imageFile(imagePath, std::ios::binary); // Open image file in binary mode
+    std::ifstream imageFile(imagePath, std::ios::binary);
     if (!imageFile) {
         std::cerr << "Error opening image file: " << imagePath << std::endl;
-        return images; // Return empty vector if there's an error
+        return images;
     }
 
     int magicNumberImages;
     int numImages;
     int numRows;
     int numCols;
-    imageFile.read(reinterpret_cast<char*>(&magicNumberImages), sizeof(magicNumberImages)); // Read magic number for images
-    imageFile.read(reinterpret_cast<char*>(&numImages), sizeof(numImages));               // Read number of images
-    imageFile.read(reinterpret_cast<char*>(&numRows), sizeof(numRows));                   // Read number of rows
-    imageFile.read(reinterpret_cast<char*>(&numCols), sizeof(numCols));                   // Read number of columns
-    numImages = _byteswap_ulong(numImages); // Swap bytes
+    imageFile.read(reinterpret_cast<char*>(&magicNumberImages), sizeof(magicNumberImages));
+    imageFile.read(reinterpret_cast<char*>(&numImages), sizeof(numImages));
+    imageFile.read(reinterpret_cast<char*>(&numRows), sizeof(numRows));
+    imageFile.read(reinterpret_cast<char*>(&numCols), sizeof(numCols));
+    numImages = _byteswap_ulong(numImages);
     numRows = _byteswap_ulong(numRows);
     numCols = _byteswap_ulong(numCols);
 
-    // Loop through each image in the dataset
     for (int i = 0; i < numImages; ++i) {
         MNISTImage mnistImage;
+		unsigned char uclabel;
+        labelFile.read(reinterpret_cast<char*>(&uclabel), 1);
+		mnistImage.label.resize(10, 0.0);
+		mnistImage.label[static_cast<size_t>(uclabel)] = 1.0;
 
-        mnistImage.label.resize(10, 0.0); // Initialize the label vector with 10 elements, all set to 0.0
-        char label_indx;
-        labelFile.read(reinterpret_cast<char*>(&label_indx), 1); // Read the label of the current image
+		mnistImage.pixels.resize(numRows * numCols);
+		std::vector<unsigned char> tmp;
+		tmp.resize(numRows * numCols);
+		imageFile.read(reinterpret_cast<char*>(tmp.data()), numRows * numCols);
 
-        // Set the corresponding position to 1.0 in the one-hot encoded vector
-        mnistImage.label[(int)label_indx] = 1.0;
+		std::transform(tmp.begin(), tmp.end(), mnistImage.pixels.begin(),
+			[](unsigned char c) { return static_cast<double>(c); });
 
-        mnistImage.pixels.resize(numRows * numCols);                  // Resize the pixel vector
-
-        // Read pixel values and store them in the vector
-        imageFile.read(reinterpret_cast<char*>(mnistImage.pixels.data()), numRows * numCols);
-
-        // Add the MNIST image to the vector
         images.push_back(mnistImage);
     }
 
-    return images; // Return the vector of MNIST images
+    return images;
 }
 
 void initial_nn_implementation_example()
@@ -98,7 +92,7 @@ void initial_nn_implementation_example()
 									  {1, 0},		// Class 2
 									  {0, 1} };		// Class 1
 
-	nn.train(training_inputs, training_targets, epochs);
+	nn.train(training_inputs, training_targets, 3);
 
 	auto testing_inputs = training_inputs;
 	auto testing_targets = training_targets;
@@ -140,11 +134,12 @@ json openConfigurationFile(const std::string& path)
 
 void json_file_nn_implementation_example()
 {
+
 	std::string path_to_json = "C:/Users/Gabriel/Documents/Projects/ANNFS/JsonFiles/example_conf_02.json";
 
 
-    const std::string trainImagePath = "C:/Users/Gabriel/Documents/Projects/ANNFS/MNIST/train-images-idx3-ubyte/train-images-idx3-ubyte";
-    const std::string trainLabelPath = "C:/Users/Gabriel/Documents/Projects/ANNFS/MNIST/train-labels-idx1-ubyte/train-labels-idx1-ubyte";
+    const std::string trainImagePath = "C:/Users/Gabriel/Documents/Projects/ANNFS/data/MNIST/train-images-idx3-ubyte/train-images-idx3-ubyte";
+    const std::string trainLabelPath = "C:/Users/Gabriel/Documents/Projects/ANNFS/data/MNIST/train-labels-idx1-ubyte/train-labels-idx1-ubyte";
 
     // Read MNIST training images
     std::vector<MNISTImage> trainingImages = readMNISTImages(trainImagePath, trainLabelPath);
@@ -155,11 +150,18 @@ void json_file_nn_implementation_example()
 
 	vector2D trainingPixels;
 	vector2D trainingLabels;
+	vector2D testPixels;
+	vector2D testLabels;
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		trainingPixels.push_back(trainingImages[i].pixels);
 		trainingLabels.push_back(trainingImages[i].label);
+	}
+	for (int i = 5; i < 8; i++)
+	{
+		testPixels.push_back(trainingImages[i].pixels);
+		testLabels.push_back(trainingImages[i].label);
 	}
 
 	auto json_file = openConfigurationFile(path_to_json);
@@ -167,10 +169,17 @@ void json_file_nn_implementation_example()
 	NeuralNetwork nn = NeuralNetwork(json_file);
 
 	//TODO decide on how to implement train method when json file is configured
-	nn.train(trainingPixels, trainingLabels, 1);
+	nn.train(trainingPixels, trainingLabels, 2);
+
+	std::vector<Matrix<double>> predictions = nn.predict(testPixels);
+	for (Matrix<double> prediction : predictions)
+	{
+		std::cout << prediction;
+	}
 }
 
 int main()
 {
+	//initial_nn_implementation_example();
 	json_file_nn_implementation_example();
 }
