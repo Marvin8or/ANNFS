@@ -1,5 +1,6 @@
 #include "NeuralNetwork/NeuralNetwork.h"
-#include "../ThirdParty/json.hpp"
+#include "Utils/utils.h"
+#include "Tests/gradient_checking.hpp"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -9,66 +10,7 @@ using json = nlohmann::json;
 // TODO Framework to load the data
 // TODO implement gradient checking for backpropagation
 // TODO implement proper way to initialize weight matrices
-struct MNISTImage {
-    std::vector<double> label;
-    std::vector<double> pixels;
-};
 
-std::vector<MNISTImage> readMNISTImages(const std::string& imagePath, const std::string& labelPath) {
-    std::vector<MNISTImage> images;
-
-    // Read labels
-    std::ifstream labelFile(labelPath, std::ios::binary);
-    if (!labelFile) {
-        std::cerr << "Error opening label file: " << labelPath << std::endl;
-        return images;
-    }
-
-    int magicNumber;
-    int numLabels;
-    labelFile.read(reinterpret_cast<char*>(&magicNumber), sizeof(magicNumber));
-    labelFile.read(reinterpret_cast<char*>(&numLabels), sizeof(numLabels));
-    numLabels = _byteswap_ulong(numLabels);
-
-    // Read images
-    std::ifstream imageFile(imagePath, std::ios::binary);
-    if (!imageFile) {
-        std::cerr << "Error opening image file: " << imagePath << std::endl;
-        return images;
-    }
-
-    int magicNumberImages;
-    int numImages;
-    int numRows;
-    int numCols;
-    imageFile.read(reinterpret_cast<char*>(&magicNumberImages), sizeof(magicNumberImages));
-    imageFile.read(reinterpret_cast<char*>(&numImages), sizeof(numImages));
-    imageFile.read(reinterpret_cast<char*>(&numRows), sizeof(numRows));
-    imageFile.read(reinterpret_cast<char*>(&numCols), sizeof(numCols));
-    numImages = _byteswap_ulong(numImages);
-    numRows = _byteswap_ulong(numRows);
-    numCols = _byteswap_ulong(numCols);
-
-    for (int i = 0; i < numImages; ++i) {
-        MNISTImage mnistImage;
-		unsigned char uclabel;
-        labelFile.read(reinterpret_cast<char*>(&uclabel), 1);
-		mnistImage.label.resize(10, 0.0);
-		mnistImage.label[static_cast<size_t>(uclabel)] = 1.0;
-
-		mnistImage.pixels.resize(numRows * numCols);
-		std::vector<unsigned char> tmp;
-		tmp.resize(numRows * numCols);
-		imageFile.read(reinterpret_cast<char*>(tmp.data()), numRows * numCols);
-
-		std::transform(tmp.begin(), tmp.end(), mnistImage.pixels.begin(),
-			[](unsigned char c) { return static_cast<double>(c); });
-
-        images.push_back(mnistImage);
-    }
-
-    return images;
-}
 
 void initial_nn_implementation_example()
 {
@@ -100,35 +42,6 @@ void initial_nn_implementation_example()
 
 	for (auto pred : predictions)
 		std::cout << pred;
-
-}
-
-json openConfigurationFile(const std::string& path)
-{
-	
-	std::ifstream jsonFile(path);
-
-	if (!jsonFile.is_open())
-	{
-		std::cerr << "Error opening json file!!" << std::endl;
-	}
-
-	// Read the contents of the file into a string
-	std::string jsonData((std::istreambuf_iterator<char>(jsonFile)), std::istreambuf_iterator<char>());
-
-	try {
-		// Parse the JSON string
-		json jsonObj = json::parse(jsonData);
-		// Access the data in jsonObj as needed
-		std::cout << "Parsing successful!\n";
-		return jsonObj;
-
-	}
-	catch (const nlohmann::json::parse_error& e) {
-		std::cerr << "JSON parsing error: " << e.what() << std::endl;
-		std::cerr << "At offset: " << e.byte << std::endl;
-	}
-
 
 }
 
@@ -178,8 +91,23 @@ void json_file_nn_implementation_example()
 	}
 }
 
+void gradient_checking_implementation()
+{
+	std::string path_to_json = "C:/Users/Gabriel/Documents/Projects/ANNFS/JsonFiles/example_conf_02.json";
+	
+
+	json configuration = openConfigurationFile(path_to_json);
+	//const std::string trainImagePath = "C:/Users/Gabriel/Documents/Projects/ANNFS/data/MNIST/train-images-idx3-ubyte/train-images-idx3-ubyte";
+	//const std::string trainLabelPath = "C:/Users/Gabriel/Documents/Projects/ANNFS/data/MNIST/train-labels-idx1-ubyte/train-labels-idx1-ubyte";
+	for (int i = 0; i < 5; i++)
+	{
+
+		check_gradients(configuration);
+	}
+}
 int main()
 {
 	//initial_nn_implementation_example();
-	json_file_nn_implementation_example();
+	//json_file_nn_implementation_example();
+	gradient_checking_implementation();
 }

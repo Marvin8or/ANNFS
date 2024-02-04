@@ -19,9 +19,9 @@ Matrix<double> LossFunctions::squared_error_derived(const Matrix<double>& y, con
 	return result;
 }
 
-double LossFunctions::mean_squared_error(const Matrix<double>& errors)
+long double LossFunctions::mean_squared_error(const Matrix<double>& errors)
 {
-	double result = 0;
+	long double result = 0;
 	for (uint i = 0; i < errors.getCols(); i++)
 		result += errors.get(0, i);
 

@@ -74,11 +74,17 @@ class Matrix
 		void print(std::ostream& flux) const;
 
 		Matrix<T> add(const Matrix<T>& matrix) const;
+		Matrix<T> add(const T& value) const;
+
 		Matrix<T> subtract(const Matrix<T>& matrix) const;
+		Matrix<T> subtract(const T& value) const;
+
 		Matrix<T> multiply(const Matrix<T>& matrix) const;
 		Matrix<T> multiply(const T& value) const;
+
 		Matrix<T> divide(const Matrix<T>& matrix) const;
 		Matrix<T> divide(const T& value) const;
+
 		Matrix<T> dot(const Matrix<T>& matrix) const;
 		Matrix<T> transpose() const;
 		Matrix<T> applyFunction(T(*function)(T)) const;
@@ -86,9 +92,14 @@ class Matrix
 		bool operator==(const Matrix<T>& matrix);
 		bool operator!=(const Matrix<T>& matrix);
 		Matrix<T> operator+=(const Matrix<T>& matrix);
+		Matrix<T> operator+=(const T& value);
+
 		Matrix<T> operator-=(const Matrix<T>& matrix);
+		Matrix<T> operator-=(const T& value);
+
 		Matrix<T> operator*=(const Matrix<T>& matrix);
 		Matrix<T> operator*=(const T& value);
+
 		Matrix<T> operator/=(const Matrix<T>& matrix);
 		Matrix<T> operator/=(const T& value);
 		T& operator()(uint y, uint x);
@@ -102,9 +113,14 @@ class Matrix
 
 template <class T> std::ostream& operator<<(std::ostream& flux, const Matrix<T>& m);
 template <class T> Matrix<T> operator+(const Matrix<T>& a, const Matrix<T>& b);
+template <class T> Matrix<T> operator+(const T& value, const Matrix<T>& b);
+
 template <class T> Matrix<T> operator-(const Matrix<T>& a, const Matrix<T>& b);
+template <class T> Matrix<T> operator-(const T& value, const Matrix<T>& b);
+
 template <class T> Matrix<T> operator*(const Matrix<T>& a, const Matrix<T>& b);
 template <class T> Matrix<T> operator*(const T& value, const Matrix<T>& b);
+
 template <class T> Matrix<T> operator/(const Matrix<T>& a, const Matrix<T>& b);
 template <class T> Matrix<T> operator/(const T& value, const Matrix<T>& b);
 
@@ -202,6 +218,7 @@ void Matrix<T>::fillRandom()
 		for (uint j = 0; j < this->cols_; j++)
 		{
 			this->put(i, j, generateRandomNumber());
+			//this->put(i, j, 0);
 		}
 	}
 }
@@ -261,6 +278,20 @@ Matrix<T> Matrix<T>::add(const Matrix<T>& matrix) const
 }
 
 template <class T>
+Matrix<T> Matrix<T>::add(const T& data) const
+{
+	Matrix<T> result(rows_, cols_);
+	for (uint i = 0; i < rows_; i++)
+	{
+		for (uint j = 0; j < cols_; j++)
+		{
+			result.put(i, j, this->get(i, j) + data);
+		}
+	}
+	return result;
+}
+
+template <class T>
 Matrix<T> Matrix<T>::subtract(const Matrix<T>& matrix) const
 {
 	if (!(cols_ == matrix.getCols() && rows_ == matrix.getRows()))
@@ -275,6 +306,20 @@ Matrix<T> Matrix<T>::subtract(const Matrix<T>& matrix) const
 		}
 	}
 
+	return result;
+}
+
+template <class T>
+Matrix<T> Matrix<T>::subtract(const T& data) const
+{
+	Matrix<T> result(rows_, cols_);
+	for (uint i = 0; i < rows_; i++)
+	{
+		for (uint j = 0; j < cols_; j++)
+		{
+			result.put(i, j, this->get(i, j) - data);
+		}
+	}
 	return result;
 }
 
@@ -424,9 +469,23 @@ Matrix<T> Matrix<T>::operator+=(const Matrix<T>& matrix)
 }
 
 template <class T>
+Matrix<T> Matrix<T>::operator+=(const T& value)
+{
+	data_ = add(value).data_;
+	return *this;
+}
+
+template <class T>
 Matrix<T> Matrix<T>::operator-=(const Matrix<T>& matrix)
 {
 	data_ = subtract(matrix).data_;
+	return *this;
+}
+
+template <class T>
+Matrix<T> Matrix<T>::operator-=(const T& value)
+{
+	data_ = subtract(value).data_;
 	return *this;
 }
 
@@ -479,8 +538,18 @@ Matrix<T> operator+(const Matrix<T>& a, const Matrix<T>& b) {
 }
 
 template <class T>
+Matrix<T> operator+(const T& value, const Matrix<T>& b) {
+	return b.add(value);
+}
+
+template <class T>
 Matrix<T> operator-(const Matrix<T>& a, const Matrix<T>& b) {
 	return a.subtract(b);
+}
+
+template <class T>
+Matrix<T> operator-(const T& value, const Matrix<T>& b) {
+	return b.subtract(value);
 }
 
 template <class T>

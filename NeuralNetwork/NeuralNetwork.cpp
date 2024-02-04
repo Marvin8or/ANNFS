@@ -56,7 +56,8 @@ void NeuralNetwork::initialize_matrices()
 
 	for (uint i = 0; i < biasesNum; i++)
 	{
-		biases.push_back(Matrix<double>(1, topology_.at(i + 1)));
+		//TODO Bias is 0
+		biases.push_back(Matrix<double>(1, topology_.at(i + 1), 0));
 		deltaBiases.push_back(Matrix<double>(1, topology_.at(i + 1)));
 		deltasBackprop.push_back(Matrix<double>(1, topology_.at(i + 1)));
 	}
@@ -180,6 +181,17 @@ void NeuralNetwork::setInputValues(std::vector<double> inputs)
 	neuronValues[0] = tmpInput;
 }
 
+void NeuralNetwork::setInputValues(const Matrix<double>& inputs)
+{
+	if (!(inputs.getCols() == neuronValues.front().getCols()))
+		throw std::invalid_argument("Invalid dimension for inputs!");
+
+	Matrix<double> tmpInput(1, inputs.getCols());
+	for (uint i = 0; i < inputs.getCols(); i++)
+		tmpInput.put(0, i, inputs.get(0, i));
+	neuronValues[0] = tmpInput;
+}
+
 void NeuralNetwork::setTargetValues(std::vector<double> targets)
 {
 	if (!(targets.size() == neuronValues.back().getCols()))
@@ -189,6 +201,74 @@ void NeuralNetwork::setTargetValues(std::vector<double> targets)
 	for (uint i = 0; i < targets.size(); i++)
 		tmpTarget.put(0, i, *(targets.begin() + i));
 	neuronValues[neuronValues.size() - 1] = tmpTarget;
+}
+
+void NeuralNetwork::setTargetValues(const Matrix<double>& targets)
+{
+	if (!(targets.getCols() == neuronValues.back().getCols()))
+		throw std::invalid_argument("Invalid dimension for targets!");
+
+	Matrix<double> tmpTarget(1, targets.getCols());;
+	for (uint i = 0; i < targets.getCols(); i++)
+		tmpTarget.put(0, i, targets.get(0, i));
+	neuronValues[neuronValues.size() - 1] = tmpTarget;
+}
+
+void NeuralNetwork::setWeights(uint indx, const Matrix<double>& weight)
+{
+	if (!(weight.getRows() == weights[indx].getRows()) || !(weight.getCols() == weights[indx].getCols()))
+		throw std::invalid_argument("Weight Matrix you are trying to set has invalid dimensions!");
+	Matrix<double> tmp(weight.getRows(), weight.getCols());
+	for (int r = 0; r < tmp.getRows(); r++)
+	{
+		for (int c = 0; c < tmp.getCols(); c++)
+		{
+			tmp.put(r, c, weight.get(r, c));
+		}
+	}
+	weights.at(indx) = tmp;
+}
+
+void NeuralNetwork::setWeights(const std::vector<Matrix<double>>& new_weights)
+{
+	std::vector<Matrix<double>> tmp_v;
+	for (int i = 0; i < new_weights.size(); i++)
+	{
+		if (!(weights[i].getRows() == new_weights[i].getRows()) || !(weights[i].getCols() == new_weights[i].getCols()))
+			throw std::invalid_argument("Weight Matrix you are trying to set has invalid dimensions!");
+
+		Matrix<double> tmp_m(new_weights[i].getRows(), new_weights[i].getCols());
+		for (int r = 0; r < tmp_m.getRows(); r++)
+		{
+			for (int c = 0; c < tmp_m.getCols(); c++)
+			{
+				tmp_m.put(r, c, new_weights[i].get(r, c));
+			}
+		}
+		tmp_v.push_back(tmp_m);
+	}
+	weights = tmp_v;
+}
+
+void NeuralNetwork::setBiases(const std::vector<Matrix<double>>& new_biases)
+{
+	std::vector<Matrix<double>> tmp_v;
+	for (int i = 0; i < new_biases.size(); i++)
+	{
+		if (!(biases[i].getRows() == new_biases[i].getRows()) || !(biases[i].getCols() == new_biases[i].getCols()))
+			throw std::invalid_argument("Bias Matrix you are trying to set has invalid dimensions!");
+
+		Matrix<double> tmp_m(new_biases[i].getRows(), new_biases[i].getCols());
+		for (int r = 0; r < tmp_m.getRows(); r++)
+		{
+			for (int c = 0; c < tmp_m.getCols(); c++)
+			{
+				tmp_m.put(r, c, new_biases[i].get(r, c));
+			}
+		}
+		tmp_v.push_back(tmp_m);
+	}
+	biases = tmp_v;
 }
 
 void NeuralNetwork::setInputValues(
@@ -209,12 +289,35 @@ void NeuralNetwork::setInputValues(
 	neuronValues[neuronValues.size() - 1] = tmpTarget;
 }
 
+std::vector<Matrix<double>> NeuralNetwork::getDeltaWeights()
+{
+	std::vector<Matrix<double>> deltaWeights_copy(deltaWeights);
+	return deltaWeights_copy;
+}
+
+std::vector<Matrix<double>> NeuralNetwork::getWeights()
+{
+	std::vector<Matrix<double>> weights_copy(weights);
+	return weights_copy;
+}
+
+std::vector<Matrix<double>> NeuralNetwork::getDeltaBiases()
+{
+	std::vector<Matrix<double>> deltaBiases_copy(deltaBiases);
+	return deltaBiases_copy;
+}
+
+std::vector<Matrix<double>> NeuralNetwork::getBiases()
+{
+	std::vector<Matrix<double>> biases_copy(biases);
+	return biases_copy;
+}
+
 void NeuralNetwork::feedForward()
 {
 	for(uint i=0; i<layerNum - 1; i++)
 	{
 		Matrix<double> z = neuronValues[i].dot(weights[i]) + biases.at(i);
-
 		Matrix<double> a = z;
 		Matrix<double> a_d = z;
 		a = a.applyFunction(rectifiedLinearUnit);
@@ -247,7 +350,6 @@ void NeuralNetwork::setErrors()
 void NeuralNetwork::backpropagation()
 {
 	uint L = layerNum - 1;
-
 	Matrix<double> lastDelta = outputNeuronErrorsFuncDerived(neuronValues[neuronValues.size() - 2], neuronValues[neuronValues.size() - 1]) * neuronValuesDerived[L];
 
 	Matrix<double> dC_dw = (neuronValues[L - 1].transpose());
@@ -256,7 +358,6 @@ void NeuralNetwork::backpropagation()
 	deltasBackprop[L - 1]	 = lastDelta;
 	deltaBiases[L - 1]		 = lastDelta;
 	deltaWeights[L -1]		 = dC_dw;
-
 #if DEBUG==ON
 	std::cout << "dC_dw" << std::endl;
 	std::cout << dC_dw << std::endl;
@@ -277,7 +378,6 @@ void NeuralNetwork::backpropagation()
 		deltasBackprop[L - 1] = lastDelta;
 		deltaBiases[L - 1] = lastDelta;
 		deltaWeights[L - 1] = dC_dw;
-
 #if DEBUG==ON
 	std::cout << "dC_dw" << std::endl;
 	std::cout << dC_dw << std::endl;
