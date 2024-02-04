@@ -2,7 +2,7 @@
   "network": {
     "architecture": {
       "input_size": 784,
-      "hidden_layers": [392, 196, 98, 49, 25],
+      "hidden_layers": [300],
       "output_size": 10
     },
     "training": {
@@ -12,8 +12,14 @@
     }
   },
   "data": {
-    "train_data_path": "path/to/train/data.csv",
-    "test_data_path": "path/to/test/data.csv"
+    "train_data_path": {
+      "images": "C:/Users/Gabriel/Documents/Projects/ANNFS/data/MNIST/train-images-idx3-ubyte/train-images-idx3-ubyte",
+      "labels": "C:/Users/Gabriel/Documents/Projects/ANNFS/data/MNIST/train-labels-idx1-ubyte/train-labels-idx1-ubyte"
+    },
+    "test_data_path": {
+      "images": "C:/Users/Gabriel/Documents/Projects/ANNFS/data/MNIST/train-images-idx3-ubyte/train-images-idx3-ubyte",
+      "labels": "C:/Users/Gabriel/Documents/Projects/ANNFS/data/MNIST/train-labels-idx1-ubyte/train-labels-idx1-ubyte"
+    }
   }
 
 }
