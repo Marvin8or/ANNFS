@@ -16,5 +16,5 @@ double generateGaussianRandomNumber();
 
 std::vector<MNISTImage> readMNISTImages(const std::string& imagePath, const std::string& labelPath);
 json openConfigurationFile(const std::string& path);
-
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> generate_synthetic_dataset(int num_samples, int num_input_features, int num_output_features, double noise);
 #endif /*UTILS_H*/

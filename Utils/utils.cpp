@@ -108,3 +108,38 @@ std::vector<MNISTImage> readMNISTImages(const std::string& imagePath, const std:
 
     return images;
 }
+
+// Generate a synthetic dataset based on a simple mathematical function with noise
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> generate_synthetic_dataset(int num_samples, int num_input_features, int num_output_features, double noise) {
+    // Initialize random number generator
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<double> dist(-1.0, 1.0);
+
+    // Initialize vectors to store input features (X) and target labels (y)
+    std::vector<std::vector<double>> X(num_samples, std::vector<double>(num_input_features));
+    std::vector<std::vector<double>> y(num_samples, std::vector<double>(num_output_features));
+
+    // Generate synthetic dataset
+    for (int i = 0; i < num_samples; ++i) {
+        // Generate random input features
+        for (int j = 0; j < num_input_features; ++j) {
+            X[i][j] = dist(gen);
+        }
+
+        for (int j = 0; j < num_output_features; ++j)
+        {
+            double y_true = 0;
+            for (int j = 0; j < num_input_features; ++j) {
+                y_true += 2 * X[i][j] * X[i][j] + X[i][j] + 1;
+            }
+            // Add Gaussian noise to the function
+            std::normal_distribution<double> noise_dist(0.0, noise);
+            double noise_value = noise_dist(gen);
+            y[i][j] = y_true + noise_value;
+        }
+    }
+
+    // Return the generated dataset
+    return std::make_pair(X, y);
+}
