@@ -34,7 +34,7 @@ void initial_nn_implementation_example()
 									  {1, 0},		// Class 2
 									  {0, 1} };		// Class 1
 
-	nn.train(training_inputs, training_targets, 3);
+	nn.train(training_inputs, training_targets, epochs);
 
 	auto testing_inputs = training_inputs;
 	auto testing_targets = training_targets;
@@ -105,9 +105,54 @@ void gradient_checking_implementation()
 		check_gradients(configuration);
 	}
 }
+
+void simple_dataset_example()
+{
+	// Generate synthetic dataset
+	int num_samples_train = 80;
+	int num_samples_test = 20;
+	int num_features = 3; // Number of features per sample
+	double noise = 0.5;
+	auto training_dataset = generate_synthetic_dataset(num_samples_train, num_features, 1, noise);
+	auto testing_dataset = generate_synthetic_dataset(num_samples_test, num_features, 1, noise);
+	std::vector<std::vector<double>> X_train = training_dataset.first;
+	std::vector<std::vector<double>> y_train = training_dataset.second;
+
+	std::vector<std::vector<double>> X_test = testing_dataset.first;
+	std::vector<std::vector<double>> y_test = testing_dataset.second;
+
+	// Output the generated dataset
+	//std::cout << "Generated Dataset:" << std::endl;
+	//for (int i = 0; i < num_samples; ++i) {
+	//	std::cout << "Sample " << i << ": [ ";
+	//	for (int j = 0; j < num_features; ++j) {
+	//		std::cout << X[i][j];
+	//		if (j != num_features - 1)
+	//			std::cout << ", ";
+	//	}
+	//	std::cout << " ]" << " y = " << y[i] << std::endl;
+	//}
+
+	std::vector<uint> topology{ 3, 3, 2, 1 };
+	NeuralNetwork nn = NeuralNetwork(
+		topology,
+		0.01,
+		MSE
+	);
+
+	int epochs = 50;
+	nn.train(X_train, y_train, epochs);
+
+	auto predictions = nn.predict(X_test);
+
+	for (int i = 0; i < y_test.size(); i++)
+		std::cout << predictions[i];
+
+}
 int main()
 {
 	//initial_nn_implementation_example();
 	//json_file_nn_implementation_example();
-	gradient_checking_implementation();
+	//gradient_checking_implementation();
+	simple_dataset_example();
 }

@@ -431,12 +431,12 @@ void NeuralNetwork::train(const std::vector<std::vector<double>>& inputs,
 
 		for (auto example = 0; example < examples; example++)
 		{
-			std::cout << "example: " << example + 1 << std::endl;
+			//std::cout << "example: " << example + 1 << std::endl;
 			setInputValues(inputs[example]);
 			setTargetValues(targets[example]);
 			feedForward();
 			setErrors();
-			std::cout << "error: " << compoundError << std::endl;
+			//std::cout << "error: " << compoundError << std::endl;
 			backpropagation();
 			gradientDescent();
 		}
@@ -454,7 +454,7 @@ std::vector<Matrix<double>> NeuralNetwork::predict(const vector2D& inputs)
 
 	std::vector<Matrix<double>> predictions;
 
-	for (auto example = 0; example < inputs.size() - 1; example++)
+	for (auto example = 0; example < inputs.size(); example++)
 	{
 		setInputValues(inputs[example]);
 		feedForward();
