@@ -6,6 +6,7 @@
 #include <vector>
 
 using json = nlohmann::json;
+// TODO implement softmax and sigmoid activations and its derivatives
 // TODO vector2D Matrix
 // TODO Framework to load the data
 // TODO implement gradient checking for backpropagation
@@ -68,12 +69,16 @@ void json_file_nn_implementation_example()
 
 	for (int i = 0; i < 10; i++)
 	{
-		trainingPixels.push_back(trainingImages[i].pixels);
+		std::vector<double> scaled_pixels = minMaxScaler(trainingImages[i].pixels);
+
+		trainingPixels.push_back(scaled_pixels);
 		trainingLabels.push_back(trainingImages[i].label);
 	}
-	for (int i = 5; i < 8; i++)
+	for (int i = 10; i < 13; i++)
 	{
-		testPixels.push_back(trainingImages[i].pixels);
+		std::vector<double> scaled_pixels = minMaxScaler(trainingImages[i].pixels);
+
+		testPixels.push_back(scaled_pixels);
 		testLabels.push_back(trainingImages[i].label);
 	}
 
@@ -152,7 +157,7 @@ void simple_dataset_example()
 int main()
 {
 	//initial_nn_implementation_example();
-	//json_file_nn_implementation_example();
+	json_file_nn_implementation_example();
 	//gradient_checking_implementation();
-	simple_dataset_example();
+	//simple_dataset_example();
 }

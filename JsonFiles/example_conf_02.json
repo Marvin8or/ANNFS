@@ -2,11 +2,17 @@
   "network": {
     "architecture": {
       "input_size": 784,
-      "hidden_layers": [300],
+      "hidden_layers": [ 256, 128, 64 ],
+      "activation_functions": [
+        "fsigmoid",
+        "fsigmoid",
+        "fsigmoid",
+        "softmax"
+      ],
       "output_size": 10
     },
     "training": {
-      "learning_rate": 0.1,
+      "learning_rate": 0.01,
       "epochs": 1,
       "loss_function": "MSE"
     }

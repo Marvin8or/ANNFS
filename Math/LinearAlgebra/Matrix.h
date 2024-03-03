@@ -88,6 +88,7 @@ class Matrix
 		Matrix<T> dot(const Matrix<T>& matrix) const;
 		Matrix<T> transpose() const;
 		Matrix<T> applyFunction(T(*function)(T)) const;
+		Matrix<T> applyFunction(Matrix<T>(*function)(const Matrix<T>&)) const;
 
 		bool operator==(const Matrix<T>& matrix);
 		bool operator!=(const Matrix<T>& matrix);
@@ -437,6 +438,14 @@ Matrix<T> Matrix<T>::applyFunction(T(*function)(T)) const
 		}
 	}
 	return result;
+}
+
+template <class T>
+Matrix<T> Matrix<T>::applyFunction(Matrix<T>(*function)(const Matrix<T>&)) const
+{
+	Matrix<T> result = (*function)(*this);
+	return result;
+	
 }
 
 template <class T>
