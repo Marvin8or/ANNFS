@@ -1,5 +1,58 @@
 #include "NeuralNetwork.h"
 #include <cmath>
+#include <numeric>
+
+
+
+double sigmoidFunction(double x)
+{
+	return x / (1 + exp(-x));
+}
+
+double d_sigmoidFunction(double x)
+{
+	return sigmoidFunction(x) / (1 - sigmoidFunction(x));
+}
+
+Matrix<double> softmaxFunction(const Matrix<double>& input)
+{
+	if (!(input.getRows() == 1))
+		throw std::invalid_argument("Input must have one row!");
+
+	Matrix<double> softmax_values(1, input.getCols());
+
+	double input_max_value = 0;
+	for (int ci = 0; ci < input.getCols(); ci++)
+	{
+		if (input.get(0, ci) > input_max_value)
+			input_max_value = input.get(0, ci);
+	}
+
+	double exp_sum = 0.0;
+	for (int ci = 0; ci < input.getCols(); ci++)
+	{
+		exp_sum += std::exp(input.get(0, ci) - input_max_value);
+	}
+
+	for (int ci = 0; ci < input.getCols(); ci++)
+	{
+		double new_value = std::exp(input.get(0, ci) - input_max_value);
+		softmax_values.put(0, ci, new_value / exp_sum);
+	}
+
+	return softmax_values;
+}
+
+Matrix<double> d_softmaxFunction(const Matrix<double>& input)
+{
+	Matrix<double> softmax_values = softmaxFunction(input);
+	Matrix<double> d_softmax_values(1, input.getCols());
+	for (int ci = 0; ci < input.getCols(); ci++)
+	{
+		d_softmax_values.put(0, ci, softmax_values.get(0, ci) / (1 - softmax_values.get(0, ci)));
+	}
+	return d_softmax_values;
+}
 
 double fastSigmoidFunction(double x)
 {
@@ -56,8 +109,7 @@ void NeuralNetwork::initialize_matrices()
 
 	for (uint i = 0; i < biasesNum; i++)
 	{
-		//TODO Bias is 0
-		biases.push_back(Matrix<double>(1, topology_.at(i + 1), 0));
+		biases.push_back(Matrix<double>(1, topology_.at(i + 1)));
 		deltaBiases.push_back(Matrix<double>(1, topology_.at(i + 1)));
 		deltasBackprop.push_back(Matrix<double>(1, topology_.at(i + 1)));
 	}
@@ -125,8 +177,27 @@ NeuralNetwork::NeuralNetwork(const json& json_configuration)
 
 	double learningRate	= network_json_configuration["training"]["learning_rate"];
 
-	// retrieve the string value
-	//auto cpp_string = j_string.template get<std::string>();
+	auto activaton_function_names = network_json_configuration["architecture"]["activation_functions"].get<std::vector<std::string>>();
+	
+	for (std::string name : activaton_function_names)
+	{
+		if (name == "sigmoid")
+		{
+			activation_functions.push_back(EActivationFunctions::Sigmoid);
+		}
+		else if (name == "softmax")
+		{
+			activation_functions.push_back(EActivationFunctions::Softmax);
+		}
+		else if (name == "relu")
+		{
+			activation_functions.push_back(EActivationFunctions::ReLu);
+		}
+		else if(name == "fsigmoid")
+		{
+			activation_functions.push_back(EActivationFunctions::FSigmoid);
+		}
+	}
 
 	auto loss	= network_json_configuration["training"]["loss_function"].get<std::string>();
 
@@ -151,6 +222,9 @@ NeuralNetwork::NeuralNetwork(const json& json_configuration)
 		throw std::invalid_argument("Number of neurons in ouput layer must be grater than zero!");
 
 	topology_.push_back(output_size);
+
+	if (!(activaton_function_names.size() == topology_.size() - 1))
+		throw std::invalid_argument("Size of list of activation functions must match number of layers!");
 
 	if (!(learningRate > 0.0))
 		throw std::invalid_argument("Learning rate must be greater than zero!");
@@ -320,8 +394,28 @@ void NeuralNetwork::feedForward()
 		Matrix<double> z = neuronValues[i].dot(weights[i]) + biases.at(i);
 		Matrix<double> a = z;
 		Matrix<double> a_d = z;
-		a = a.applyFunction(rectifiedLinearUnit);
-		a_d = a_d.applyFunction(d_rectifiedLinearUnit);
+
+		switch (activation_functions[i])
+		{
+		case EActivationFunctions::ReLu:
+			a = a.applyFunction(rectifiedLinearUnit);
+			a_d = a_d.applyFunction(d_rectifiedLinearUnit);
+			break;
+		case EActivationFunctions::FSigmoid:
+			a = a.applyFunction(fastSigmoidFunction);
+			a_d = a_d.applyFunction(d_fastSigmoidFunction);
+			break;
+		case EActivationFunctions::Sigmoid:
+			a = a.applyFunction(sigmoidFunction);
+			a_d = a_d.applyFunction(d_sigmoidFunction);
+			break;
+		case EActivationFunctions::Softmax:
+			a = a.applyFunction(softmaxFunction);
+			a_d = a_d.applyFunction(d_softmaxFunction);
+			break;
+		}
+
+
 #if DEBUG==ON
 		std::cout << a << std::endl;
 		std::cout << a_d << std::endl;
@@ -342,7 +436,6 @@ void NeuralNetwork::setErrors()
 	std::cout << error << "\n" << std::endl;
 #else
 	*outputNeuronErrorsPtr = outputNeuronErrorsFunc(neuronValues[neuronValues.size() - 1], neuronValues[neuronValues.size() - 2]);
-	//std::cout << *outputNeuronErrorsPtr;
 	compoundError = compoundErrorFunc(*outputNeuronErrorsPtr);
 #endif
 }
@@ -431,35 +524,38 @@ void NeuralNetwork::train(const std::vector<std::vector<double>>& inputs,
 
 		for (auto example = 0; example < examples; example++)
 		{
+			// TODO make it verbose
 			//std::cout << "example: " << example + 1 << std::endl;
 			setInputValues(inputs[example]);
 			setTargetValues(targets[example]);
 			feedForward();
 			setErrors();
 			//std::cout << "error: " << compoundError << std::endl;
+			compoundErrors.push_back(compoundError);
 			backpropagation();
 			gradientDescent();
 		}
-		std::cout << "Epoch Error: " << compoundError << std::endl;
-		epochErrors.push_back(compoundError);
-		//print_predictions();
+		double epochError = accumulate(compoundErrors.begin(), compoundErrors.end(), 0.0) / examples;
+
+		std::cout << "Epoch Error: " << epochError << std::endl;
+		epochErrors.push_back(epochError);
 	}
 }
 
-std::vector<Matrix<double>> NeuralNetwork::predict(const vector2D& inputs)
+vector2D NeuralNetwork::predict(const vector2D& inputs)
 {
 	// Check if inputs have same number of columns as first layer fo nn
 	if (!(inputs[0].size() == topology_[0]))
-		throw std::invalid_argument("Number of columns in INPUT dataset doesnt match number of neurons in input layer");
+		throw std::invalid_argument("Number of columns in INPUT dataset doesn't match number of neurons in input layer");
 
-	std::vector<Matrix<double>> predictions;
+	vector2D predictions;
 
 	for (auto example = 0; example < inputs.size(); example++)
 	{
 		setInputValues(inputs[example]);
 		feedForward();
-		Matrix<double> tmp = neuronValues[layerNum - 1];
-		predictions.push_back(tmp);
+		std::vector<double> outputLayer = neuronValues[layerNum - 1].toVector();
+		predictions.push_back(outputLayer);
 	}
 	return predictions;
 }

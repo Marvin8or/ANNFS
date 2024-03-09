@@ -5,13 +5,22 @@
 #define DEBUG OFF
 #include <vector>
 #include <utility>
+
+
 #include "../Math/LinearAlgebra/Matrix.h"
 #include "../ThirdParty/json.hpp"
+#include "../Utils/utils.h"
 #include "LossFunctions.h"
 
 
-using vector2D = std::vector<std::vector<double>>;
+
 using json = nlohmann::json;
+
+double sigmoidFunction(double x);
+double d_sigmoidFunction(double x);
+
+Matrix<double> softmaxFunction(const Matrix<double>& input);
+Matrix<double> d_softmaxFunction(const Matrix<double>& input);
 
 double fastSigmoidFunction(double x); //Static
 double d_fastSigmoidFunction(double x);
@@ -19,10 +28,26 @@ double d_fastSigmoidFunction(double x);
 double rectifiedLinearUnit(double x);
 double d_rectifiedLinearUnit(double x);
 
+enum EActivationFunctions
+{
+	ReLu,
+	Sigmoid,
+	FSigmoid,
+	Softmax
+};
+
+enum EDerivedActivationFunctions
+{
+	d_ReLu,
+	d_Sigmoid,
+	d_FSigmoid,
+	d_Softmax
+};
 
 class NeuralNetwork
 {
 private:
+	std::vector<EActivationFunctions>    activation_functions;
 	std::vector<uint>		    topology_;
 	uint layerNum;
 
@@ -40,8 +65,9 @@ private:
 	Matrix<double>(*outputNeuronErrorsFuncDerived)(const Matrix<double>&, const Matrix<double>&);
 
 	std::unique_ptr<Matrix<double>>	outputNeuronErrorsPtr;	// Matrix 1x<num-ouput-neurons> that contains the errors of each output neuron, updated after each feedforward
-	long double							compoundError;			// compound error, updated after each feedforward
-	std::vector<double>				epochErrors;			// Error after each epoch
+	double							compoundError;			// compound error, updated after each feedforward
+	std::vector<double>				compoundErrors;			// Historical compound errors
+	std::vector<double>				epochErrors;			// Error after each epoch, mean of all compund errors
 
 	long double (*compoundErrorFunc) (const Matrix<double>&);
 
@@ -83,7 +109,7 @@ public:
 			   const std::vector<std::vector<double>>& targets,
 			   const uint& nepochs);
 
-	std::vector<Matrix<double>> predict(const vector2D& inputs);
+	vector2D predict(const vector2D& inputs);
 
 	void summary() const;
 	void print_predictions() const;

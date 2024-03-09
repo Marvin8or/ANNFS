@@ -7,7 +7,7 @@ double generateRandomNumber()
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<> distribution(-1, 1);
+	std::uniform_real_distribution<> distribution(0, 1);
 	return distribution(gen);
 }
 
@@ -143,3 +143,125 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> ge
     // Return the generated dataset
     return std::make_pair(X, y);
 }
+
+//Matrix<double> minMaxNormalization(const Matrix<double>& input)
+//{
+//    Matrix<double> normalizedMatrix(input.getRows(), input.getCols());
+//    double max_value = 0;
+//    double min_value = 0;
+//
+//    for (uint ri = 0; ri < input.getRows(); ri++)
+//    {
+//        for (uint ci = 0; ci < input.getCols(); ci++)
+//        {
+//            double current_value = input.get(ri, ci);
+//            if (current_value > max_value)
+//                max_value = current_value;
+//            if (current_value < min_value)
+//                min_value = current_value;
+//        }
+//    }
+//
+//    for (uint ri = 0; ri < input.getRows(); ri++)
+//    {
+//        for (uint ci = 0; ci < input.getCols(); ci++)
+//        {
+//            double current_value = input.get(ri, ci);
+//            double new_value = (current_value - min_value) / (max_value - min_value);
+//            normalizedMatrix.put(ri, ci, new_value);
+//        }
+//    }
+//
+//    return normalizedMatrix;
+//}
+
+std::vector<double> minMaxScaler(const std::vector<double>& input)
+{
+    uint input_size = input.size();
+    vector2D normalizedInput;
+    double max_value = 0;
+    double min_value = 0;
+
+    for (uint i = 0; i < input_size; i++)
+    {
+        double current_value = input[i];
+        if (current_value > max_value)
+            max_value = current_value;
+        if (current_value < min_value)
+            min_value = current_value;
+
+    }
+
+    std::vector<double> normalized_input;
+    for (uint i = 0; i < input_size; i++)
+    {
+        double current_value = input[i];
+        double new_value = (current_value - min_value) / (max_value - min_value);
+        normalized_input.push_back(new_value);
+    }
+
+    return normalized_input;
+}
+
+//Matrix<double> l1Normalization(const Matrix<double>& input)
+//{
+//    uint rows = input.getRows();
+//    uint cols = input.getCols();
+//    Matrix<double> normalizedInput(rows, cols);
+//    double abs_sum_denom = 0;
+//
+//
+//    for (uint ri = 0; ri < rows; ri++)
+//    {
+//        for (uint ci = 0; ci < cols; ci++)
+//        {
+//            double current_value = input.get(ri, ci);
+//            abs_sum_denom += std::abs(current_value);
+//        }
+//    }
+//
+//    for (uint ri = 0; ri < rows; ri++)
+//    {
+//
+//        for (uint ci = 0; ci < cols; ci++)
+//        {
+//            double current_value = input.get(ri, ci);
+//            double new_value = current_value / abs_sum_denom;
+//            normalizedInput.put(ri, ci, new_value);
+//        }
+//    }
+//
+//    return normalizedInput;
+//}
+//
+//vector2D l1Normalization(const vector2D& input)
+//{
+//    uint rows = input.size();
+//    uint cols = input[0].size();
+//    vector2D normalizedInput;
+//    double abs_sum_denom = 0;
+//
+//
+//    for (uint ri = 0; ri < rows; ri++)
+//    {
+//        for (uint ci = 0; ci < cols; ci++)
+//        {
+//            double current_value = input[ri][ci];
+//            abs_sum_denom += std::abs(current_value);
+//        }
+//    }
+//
+//    for (uint ri = 0; ri < rows; ri++)
+//    {
+//        std::vector<double> new_row;
+//        for (uint ci = 0; ci < cols; ci++)
+//        {
+//            double current_value = input[ri][ci];
+//            double new_value = current_value / abs_sum_denom;
+//            new_row.push_back(new_value);
+//        }
+//        normalizedInput.push_back(new_row);
+//    }
+//
+//    return normalizedInput;
+//}
