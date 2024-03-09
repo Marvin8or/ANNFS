@@ -65,8 +65,9 @@ private:
 	Matrix<double>(*outputNeuronErrorsFuncDerived)(const Matrix<double>&, const Matrix<double>&);
 
 	std::unique_ptr<Matrix<double>>	outputNeuronErrorsPtr;	// Matrix 1x<num-ouput-neurons> that contains the errors of each output neuron, updated after each feedforward
-	long double							compoundError;			// compound error, updated after each feedforward
-	std::vector<double>				epochErrors;			// Error after each epoch
+	double							compoundError;			// compound error, updated after each feedforward
+	std::vector<double>				compoundErrors;			// Historical compound errors
+	std::vector<double>				epochErrors;			// Error after each epoch, mean of all compund errors
 
 	long double (*compoundErrorFunc) (const Matrix<double>&);
 
@@ -108,7 +109,7 @@ public:
 			   const std::vector<std::vector<double>>& targets,
 			   const uint& nepochs);
 
-	std::vector<Matrix<double>> predict(const vector2D& inputs);
+	vector2D predict(const vector2D& inputs);
 
 	void summary() const;
 	void print_predictions() const;

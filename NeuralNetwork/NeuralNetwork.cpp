@@ -1,5 +1,6 @@
 #include "NeuralNetwork.h"
 #include <cmath>
+#include <numeric>
 
 
 
@@ -108,8 +109,7 @@ void NeuralNetwork::initialize_matrices()
 
 	for (uint i = 0; i < biasesNum; i++)
 	{
-		//TODO Bias is 0
-		biases.push_back(Matrix<double>(1, topology_.at(i + 1), 1));
+		biases.push_back(Matrix<double>(1, topology_.at(i + 1)));
 		deltaBiases.push_back(Matrix<double>(1, topology_.at(i + 1)));
 		deltasBackprop.push_back(Matrix<double>(1, topology_.at(i + 1)));
 	}
@@ -436,7 +436,6 @@ void NeuralNetwork::setErrors()
 	std::cout << error << "\n" << std::endl;
 #else
 	*outputNeuronErrorsPtr = outputNeuronErrorsFunc(neuronValues[neuronValues.size() - 1], neuronValues[neuronValues.size() - 2]);
-	//std::cout << *outputNeuronErrorsPtr;
 	compoundError = compoundErrorFunc(*outputNeuronErrorsPtr);
 #endif
 }
@@ -525,35 +524,38 @@ void NeuralNetwork::train(const std::vector<std::vector<double>>& inputs,
 
 		for (auto example = 0; example < examples; example++)
 		{
-			std::cout << "example: " << example + 1 << std::endl;
+			// TODO make it verbose
+			//std::cout << "example: " << example + 1 << std::endl;
 			setInputValues(inputs[example]);
 			setTargetValues(targets[example]);
 			feedForward();
 			setErrors();
-			std::cout << "error: " << compoundError << std::endl;
+			//std::cout << "error: " << compoundError << std::endl;
+			compoundErrors.push_back(compoundError);
 			backpropagation();
 			gradientDescent();
 		}
-		std::cout << "Epoch Error: " << compoundError << std::endl;
-		epochErrors.push_back(compoundError);
-		//print_predictions();
+		double epochError = accumulate(compoundErrors.begin(), compoundErrors.end(), 0.0) / examples;
+
+		std::cout << "Epoch Error: " << epochError << std::endl;
+		epochErrors.push_back(epochError);
 	}
 }
 
-std::vector<Matrix<double>> NeuralNetwork::predict(const vector2D& inputs)
+vector2D NeuralNetwork::predict(const vector2D& inputs)
 {
 	// Check if inputs have same number of columns as first layer fo nn
 	if (!(inputs[0].size() == topology_[0]))
 		throw std::invalid_argument("Number of columns in INPUT dataset doesn't match number of neurons in input layer");
 
-	std::vector<Matrix<double>> predictions;
+	vector2D predictions;
 
 	for (auto example = 0; example < inputs.size(); example++)
 	{
 		setInputValues(inputs[example]);
 		feedForward();
-		Matrix<double> tmp = neuronValues[layerNum - 1];
-		predictions.push_back(tmp);
+		std::vector<double> outputLayer = neuronValues[layerNum - 1].toVector();
+		predictions.push_back(outputLayer);
 	}
 	return predictions;
 }

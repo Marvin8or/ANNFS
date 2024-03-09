@@ -41,8 +41,8 @@ void initial_nn_implementation_example()
 	auto testing_targets = training_targets;
 	auto predictions = nn.predict(testing_inputs);
 
-	for (auto pred : predictions)
-		std::cout << pred;
+	/*for (auto pred : predictions)
+		std::cout << pred;*/
 
 }
 
@@ -67,14 +67,14 @@ void json_file_nn_implementation_example()
 	vector2D testPixels;
 	vector2D testLabels;
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 20; i++)
 	{
 		std::vector<double> scaled_pixels = minMaxScaler(trainingImages[i].pixels);
 
 		trainingPixels.push_back(scaled_pixels);
 		trainingLabels.push_back(trainingImages[i].label);
 	}
-	for (int i = 10; i < 13; i++)
+	for (int i = 20; i < 25; i++)
 	{
 		std::vector<double> scaled_pixels = minMaxScaler(trainingImages[i].pixels);
 
@@ -89,10 +89,22 @@ void json_file_nn_implementation_example()
 	//TODO decide on how to implement train method when json file is configured
 	nn.train(trainingPixels, trainingLabels, 2);
 
-	std::vector<Matrix<double>> predictions = nn.predict(testPixels);
-	for (Matrix<double> prediction : predictions)
+	vector2D predictions = nn.predict(testPixels);
+	for (uint pi = 0; pi < predictions.size(); pi++)
 	{
-		std::cout << prediction;
+		std::cout << "Actual values" << std::endl;
+		std::cout << "=============" << std::endl;
+		std::cout << "Example " << pi + 1 << std::endl;
+		for (uint i = 0; i < testLabels[pi].size(); i++)
+			std::cout << testLabels[pi][i] << " ";
+		std::cout << "\n" << std::endl;
+
+		std::cout << "Predictions";
+		std::cout << "=============" << std::endl;
+		std::cout << "Example " << pi + 1 << std::endl;
+		for (uint i = 0; i < predictions[pi].size(); i++)
+			std::cout << predictions[pi][i] << " ";
+		std::cout << "\n" << std::endl;
 	}
 }
 
@@ -150,8 +162,8 @@ void simple_dataset_example()
 
 	auto predictions = nn.predict(X_test);
 
-	for (int i = 0; i < y_test.size(); i++)
-		std::cout << predictions[i];
+	//for (int i = 0; i < y_test.size(); i++)
+	//	std::cout << predictions[i];
 
 }
 int main()
