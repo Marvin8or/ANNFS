@@ -72,6 +72,7 @@ class Matrix
 		void fillRandom();
 		void fill(const T& value);
 		void print(std::ostream& flux) const;
+		std::vector<T> toVector() const;
 
 		Matrix<T> add(const Matrix<T>& matrix) const;
 		Matrix<T> add(const T& value) const;
@@ -260,6 +261,21 @@ void Matrix<T>::print(std::ostream& flux) const
 		flux << std::endl;
 	}
 }
+
+template <class T>
+std::vector<T> Matrix<T>::toVector() const
+{
+	std::vector<T> result;
+	for (uint ri = 0; ri < rows_; ri++)
+	{
+		for (uint ci = 0; ci < cols_; ci++)
+		{
+			result.push_back(this->get(ri, ci));
+		}
+	}
+	return result;
+}
+
 template <class T>
 Matrix<T> Matrix<T>::add(const Matrix<T>& matrix) const
 {
